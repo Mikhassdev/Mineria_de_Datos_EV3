@@ -1,0 +1,8 @@
+chequeo,n
+Registros totales,328998
+Registros con MRUN vacío,970
+MRUN con más de un título (registros adicionales),11951
+Año de ingreso original con código especial (<1950 o >2025),18029
+Fecha de titulación con valor por defecto 19000101,0
+"Género fuera de {1,2}",0
+Rango de edad 'Sin Información',14

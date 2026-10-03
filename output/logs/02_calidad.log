@@ -1,0 +1,78 @@
+
+== Chequeos informativos ==
+# A tibble: 7 × 2
+  chequeo                                                          n
+  <chr>                                                        <int>
+1 Registros totales                                           328998
+2 Registros con MRUN vacío                                       970
+3 MRUN con más de un título (registros adicionales)            11951
+4 Año de ingreso original con código especial (<1950 o >2025)  18029
+5 Fecha de titulación con valor por defecto 19000101               0
+6 Género fuera de {1,2}                                            0
+7 Rango de edad 'Sin Información'                                 14
+
+== Bitácora de reglas ==
+# A tibble: 8 × 5
+  paso 
+  <chr>
+1 R1   
+2 R2   
+3 R3   
+4 R4   
+5 R5   
+6 R6   
+7 R7   
+8 R8   
+  regla                                                                         
+  <chr>                                                                         
+1 Solo nivel_global = 'Pregrado' (la pregunta es sobre pregrado)                
+2 Año de ingreso original entre 1950 y 2025 (excluye códigos 1900/9995/9998/999…
+3 Semestre de ingreso original en {1, 2}                                        
+4 Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-01-…
+5 Duración teórica total de la carrera > 0 semestres                            
+6 Semestres transcurridos >= 1 (titulación no anterior al ingreso)              
+7 Excluye 'Plan Regular de Continuidad' (ingreso de origen no comparable con du…
+8 Eliminación de mrun, fec_nac_alu, nombre_titulo y nombre_grado (minimización) 
+  filas_antes filas_despues eliminadas
+        <int>         <int>      <int>
+1      328998        238708      90290
+2      238708        220962      17746
+3      220962        220962          0
+4      220962        220962          0
+5      220962        220962          0
+6      220962        220962          0
+7      220962        216436       4526
+8      216436        216436          0
+
+== Variable respuesta (pregrado limpio) ==
+# A tibble: 1 × 5
+       n pct_a_tiempo_estricto pct_titulacion_oportuna mediana_sobreduracion_sem
+   <int>                 <dbl>                   <dbl>                     <dbl>
+1 216436                  31.4                    71.8                         1
+  pct_atipicos
+         <dbl>
+1         2.44
+
+== Por tipo de institución y nivel ==
+# A tibble: 5 × 5
+  tipo_inst_1                  nivel_carrera_2            n pct_oportuna
+  <chr>                        <chr>                  <int>        <dbl>
+1 Centros de Formación Técnica Carreras Técnicas      39659         73.6
+2 Institutos Profesionales     Carreras Profesionales 46237         78.1
+3 Institutos Profesionales     Carreras Técnicas      42022         81.9
+4 Universidades                Carreras Profesionales 83200         62.1
+5 Universidades                Carreras Técnicas       5318         77.2
+  mediana_sobreduracion
+                  <dbl>
+1                     1
+2                     1
+3                     1
+4                     2
+5                     1
+
+== Por tipo de plan (revisar comportamiento de planes de continuidad) ==
+# A tibble: 2 × 5
+  tipo_plan_carr      n pct_oportuna mediana_dur_teorica mediana_sem_transc
+  <chr>           <int>        <dbl>               <dbl>              <dbl>
+1 Plan Especial    7482         74.7                   4                  5
+2 Plan Regular   208954         71.7                   8                  9

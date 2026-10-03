@@ -1,0 +1,42 @@
+variable,tipo,n_vacios,pct_vacios,n_distintos,ejemplo
+cat_periodo,character,0,0,1,2025
+cod_sies_obt_tit,character,0,0,15469,I23S2C387J1V1
+mrun,character,970,0.29,316077,[omitido]
+gen_alu,integer,0,0,2,1
+fec_nac_alu,character,0,0,702,[omitido]
+rango_edad,character,0,0,7,30 a 34 Años
+anio_ing_carr_ori,integer,0,0,45,2022
+sem_ing_carr_ori,integer,0,0,3,2
+anio_ing_carr_act,integer,0,0,42,2023
+sem_ing_carr_act,integer,0,0,2,2
+nombre_titulo,character,35143,10.68,4817,INGENIERO CIVIL INDUSTRIAL
+nombre_grado,character,201664,61.3,2473,MAGISTER EN DATA SCIENCE
+fecha_obtencion_titulo,character,0,0,361,20250328
+tipo_inst_1,character,0,0,3,Universidades
+tipo_inst_2,character,0,0,4,Universidades Privadas
+tipo_inst_3,character,0,0,6,Universidades Privadas
+cod_inst,character,0,0,123,23
+nomb_inst,character,0,0,123,UNIVERSIDAD ADOLFO IBAÑEZ
+cod_sede,character,0,0,49,2
+nomb_sede,character,0,0,192,SEDE PEÑALOLEN
+cod_carrera,character,5471,1.66,1460,387
+nomb_carrera,character,0,0,5598,MAGISTER EN DATA SCIENCE
+nivel_global,character,0,0,3,Posgrado
+nivel_carrera_1,character,0,0,9,Magister
+nivel_carrera_2,character,0,0,5,Magister
+dur_estudio_carr,integer,0,0,15,3
+dur_proceso_tit,integer,0,0,8,0
+dur_total_carr,integer,0,0,16,3
+region_sede,character,0,0,16,Metropolitana
+provincia_sede,character,0,0,47,SANTIAGO
+comuna_sede,character,0,0,103,PEÑALOLEN
+jornada,character,0,0,5,Diurna
+modalidad,character,0,0,3,Presencial
+version,character,5491,1.67,8,1
+tipo_plan_carr,character,0,0,3,Plan Regular
+area_conocimiento,character,0,0,10,Ciencias Básicas
+cine_f_97_area,character,0,0,8,Ciencias
+cine_f_97_subarea,character,0,0,22,Matemáticas y Estadísticas
+area_generica,character,0,0,285,Magister en Ciencias Básicas
+cine_f_13_area,character,0,0,10,"Ciencias naturales, matemáticas y estadística"
+cine_f_13_subarea,character,0,0,29,Matemáticas y Estadísticas

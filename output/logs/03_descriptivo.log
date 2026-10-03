@@ -1,0 +1,113 @@
+== KPI global ==
+# A tibble: 1 × 9
+       n n_oportuna mediana_sobreduracion pct_mas_doble   pct ic_inf ic_sup
+   <int>      <int>                 <dbl>         <dbl> <dbl>  <dbl>  <dbl>
+1 216436     155468                     1          7.46  71.8   71.6   72.0
+  brecha_meta_pp pct_estricto
+           <dbl>        <dbl>
+1          -3.17         31.4
+
+== KPI por dimensión ==
+# A tibble: 49 × 7
+   dimension          valor                          n   pct ic_inf ic_sup
+   <chr>              <chr>                      <int> <dbl>  <dbl>  <dbl>
+ 1 grupo_inst         CFT · técnica              39659  73.6   73.2   74.1
+ 2 grupo_inst         IP · profesional           46237  78.1   77.7   78.4
+ 3 grupo_inst         IP · técnica               42022  81.9   81.5   82.3
+ 4 grupo_inst         Universidad · profesional  83200  62.1   61.7   62.4
+ 5 grupo_inst         Universidad · técnica       5318  77.2   76     78.3
+ 6 area_conocimiento  Administración y Comercio  48569  76     75.6   76.3
+ 7 area_conocimiento  Agropecuaria                6392  61.1   59.9   62.2
+ 8 area_conocimiento  Arte y Arquitectura        10829  73     72.2   73.8
+ 9 area_conocimiento  Ciencias Básicas            2490  48.1   46.2   50.1
+10 area_conocimiento  Ciencias Sociales          23053  80.6   80.1   81.1
+11 area_conocimiento  Derecho                     5673  34.4   33.1   35.6
+12 area_conocimiento  Educación                  20415  82     81.5   82.5
+13 area_conocimiento  Humanidades                 1201  65.7   63     68.3
+14 area_conocimiento  Salud                      39913  77     76.6   77.4
+15 area_conocimiento  Tecnología                 57901  63.5   63.1   63.9
+16 modalidad_jornada  A distancia                23870  80.7   80.2   81.2
+17 modalidad_jornada  Presencial diurna         141740  68.8   68.6   69.1
+18 modalidad_jornada  Presencial vespertina      48445  76.1   75.7   76.4
+19 modalidad_jornada  Semipresencial u otra       2381  75.9   74.1   77.6
+20 macrozona          Austral                     1696  67.7   65.5   69.9
+21 macrozona          Centro                     38167  71.4   71     71.9
+22 macrozona          Metropolitana             103992  73.8   73.5   74  
+23 macrozona          Norte                      24301  65.6   65     66.2
+24 macrozona          Sur                        48280  71.2   70.8   71.6
+25 region_sede        Antofagasta                 7110  63.2   62     64.3
+26 region_sede        Arica y Parinacota          2860  63     61.2   64.7
+27 region_sede        Atacama                     2716  61.9   60     63.7
+28 region_sede        Aysén                        451  66.3   61.8   70.5
+29 region_sede        Biobío                     21882  72.1   71.5   72.7
+30 region_sede        Coquimbo                    8208  70.3   69.3   71.3
+31 region_sede        La Araucanía                9331  69.8   68.8   70.7
+32 region_sede        Lib. Gral. B. O'Higgins     5733  75.6   74.5   76.7
+33 region_sede        Los Lagos                   7820  75.6   74.6   76.5
+34 region_sede        Los Ríos                    4611  60.6   59.2   62  
+35 region_sede        Magallanes                  1245  68.3   65.6   70.8
+36 region_sede        Maule                      11414  73.8   73     74.6
+37 region_sede        Metropolitana             103992  73.8   73.5   74  
+38 region_sede        Tarapacá                    3407  64.7   63.1   66.3
+39 region_sede        Valparaíso                 21020  69     68.4   69.6
+40 region_sede        Ñuble                       4636  73.2   71.9   74.5
+41 tramo_edad_ingreso 19 o menos                 75632  65.4   65.1   65.8
+42 tramo_edad_ingreso 20 a 24                    72834  69.2   68.8   69.5
+43 tramo_edad_ingreso 25 a 29                    22926  77.7   77.2   78.3
+44 tramo_edad_ingreso 30 o más                   45043  83.9   83.5   84.2
+45 tramo_edad_ingreso <NA>                           1   0      0     79.3
+46 genero             Hombre                     97620  66     65.7   66.3
+47 genero             Mujer                     118816  76.6   76.4   76.8
+48 tipo_plan_carr     Plan Especial               7482  74.7   73.7   75.7
+49 tipo_plan_carr     Plan Regular              208954  71.7   71.5   71.9
+   mediana_sobreduracion
+                   <dbl>
+ 1                     1
+ 2                     1
+ 3                     1
+ 4                     2
+ 5                     1
+ 6                     1
+ 7                     1
+ 8                     1
+ 9                     3
+10                     1
+11                     4
+12                     1
+13                     1
+14                     1
+15                     1
+16                     1
+17                     1
+18                     1
+19                     1
+20                     1
+21                     1
+22                     1
+23                     1
+24                     1
+25                     1
+26                     1
+27                     1
+28                     1
+29                     1
+30                     1
+31                     1
+32                     1
+33                     1
+34                     2
+35                     1
+36                     1
+37                     1
+38                     1
+39                     1
+40                     1
+41                     1
+42                     1
+43                     1
+44                     1
+45                    31
+46                     1
+47                     1
+48                     1
+49                     1

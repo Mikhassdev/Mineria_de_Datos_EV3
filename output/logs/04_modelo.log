@@ -1,0 +1,168 @@
+Registros para el modelo: 216435 (excluidos por NA: 1 )
+Prevalencia fuera de plazo: 28.2 %
+
+== Sensibilidad (agregando dur_total_carr) ==
+# A tibble: 26 × 7
+   termino                                    OR_con_duracion p_con_duracion
+   <chr>                                                <dbl>          <dbl>
+ 1 grupo_instCFT · técnica                              0.298       9.23e- 4
+ 2 grupo_instIP · profesional                           0.356       5.77e- 8
+ 3 grupo_instIP · técnica                               0.254       4.95e- 5
+ 4 grupo_instUniversidad · técnica                      0.214       6.91e- 5
+ 5 area_conocimientoAdministración y Comercio           0.645       2.17e- 9
+ 6 area_conocimientoAgropecuaria                        0.965       8.53e- 1
+ 7 area_conocimientoArte y Arquitectura                 0.613       1.21e- 4
+ 8 area_conocimientoCiencias Básicas                    1.19        2.39e- 1
+ 9 area_conocimientoCiencias Sociales                   0.364       2.04e-10
+10 area_conocimientoDerecho                             2.66        1.17e- 7
+11 area_conocimientoEducación                           0.376       1.85e-10
+12 area_conocimientoHumanidades                         0.573       3.63e- 3
+13 area_conocimientoSalud                               0.483       1.48e- 8
+14 modalidad_jornadaA distancia                         1.33        1.23e- 1
+15 modalidad_jornadaPresencial vespertina               1.08        5   e- 1
+16 modalidad_jornadaSemipresencial u otra               1.68        3.38e- 2
+17 macrozonaAustral                                     1.25        7.24e- 2
+18 macrozonaCentro                                      1.09        4.44e- 1
+19 macrozonaNorte                                       1.37        5.08e- 3
+20 macrozonaSur                                         1.02        7.67e- 1
+21 tramo_edad_ingreso20 a 24                            1.02        6.56e- 1
+22 tramo_edad_ingreso25 a 29                            0.693       1.89e- 5
+23 tramo_edad_ingreso30 o más                           0.474       5.26e- 7
+24 generoMujer                                          0.76        3.37e-20
+25 tipo_plan_carrPlan Especial                          0.807       5.6 e- 1
+26 declara_proceso_titTRUE                              0.718       1.37e- 2
+   OR_modelo_principal p_modelo_principal cambio_pct cambia_conclusion
+                 <dbl>              <dbl>      <dbl> <lgl>            
+ 1               0.559           1.04e- 1   -46.6    TRUE             
+ 2               0.445           3.01e- 8   -20.1    FALSE            
+ 3               0.477           1.18e- 4   -46.6    FALSE            
+ 4               0.407           1.36e- 4   -47.4    FALSE            
+ 5               0.661           4.21e- 8    -2.42   FALSE            
+ 6               0.957           8.25e- 1     0.817  FALSE            
+ 7               0.621           1.37e- 4    -1.28   FALSE            
+ 8               1.19            2.23e- 1    -0.14   FALSE            
+ 9               0.371           2.19e-10    -1.88   FALSE            
+10               2.51            1.14e- 6     5.85   FALSE            
+11               0.387           9.12e-10    -2.65   FALSE            
+12               0.657           1.19e- 2   -12.8    FALSE            
+13               0.456           6.71e- 8     5.93   FALSE            
+14               1.36            8.14e- 2    -2.67   FALSE            
+15               1.1             4.03e- 1    -1.68   FALSE            
+16               1.56            5.53e- 2     7.75   TRUE             
+17               1.25            8.26e- 2    -0.112  FALSE            
+18               1.09            4.42e- 1    -0.143  FALSE            
+19               1.39            3.36e- 3    -1.63   FALSE            
+20               1.02            7.67e- 1     0.0343 FALSE            
+21               1.03            4.25e- 1    -1.35   FALSE            
+22               0.704           6.37e- 5    -1.55   FALSE            
+23               0.478           1.06e- 6    -0.854  FALSE            
+24               0.761           6.38e-20    -0.118  FALSE            
+25               1.23            4.91e- 1   -34.1    TRUE             
+26               0.695           9.11e- 3     3.29   FALSE            
+GVIF ajustado de dur_total_carr en el modelo de sensibilidad: 2.95 
+
+== Odds ratio (errores agrupados por institución) ==
+# A tibble: 26 × 5
+   termino                                       OR OR_inf OR_sup  p_valor
+   <chr>                                      <dbl>  <dbl>  <dbl>    <dbl>
+ 1 grupo_instCFT · técnica                    0.559  0.277  1.13  1.04e- 1
+ 2 grupo_instIP · profesional                 0.445  0.335  0.593 3.01e- 8
+ 3 grupo_instIP · técnica                     0.477  0.327  0.695 1.18e- 4
+ 4 grupo_instUniversidad · técnica            0.407  0.256  0.646 1.36e- 4
+ 5 area_conocimientoAdministración y Comercio 0.661  0.57   0.766 4.21e- 8
+ 6 area_conocimientoAgropecuaria              0.957  0.651  1.41  8.25e- 1
+ 7 area_conocimientoArte y Arquitectura       0.621  0.486  0.793 1.37e- 4
+ 8 area_conocimientoCiencias Básicas          1.19   0.898  1.59  2.23e- 1
+ 9 area_conocimientoCiencias Sociales         0.371  0.273  0.504 2.19e-10
+10 area_conocimientoDerecho                   2.51   1.73   3.65  1.14e- 6
+11 area_conocimientoEducación                 0.387  0.285  0.524 9.12e-10
+12 area_conocimientoHumanidades               0.657  0.473  0.911 1.19e- 2
+13 area_conocimientoSalud                     0.456  0.343  0.606 6.71e- 8
+14 modalidad_jornadaA distancia               1.36   0.962  1.93  8.14e- 2
+15 modalidad_jornadaPresencial vespertina     1.1    0.877  1.38  4.03e- 1
+16 modalidad_jornadaSemipresencial u otra     1.56   0.99   2.47  5.53e- 2
+17 macrozonaAustral                           1.25   0.972  1.6   8.26e- 2
+18 macrozonaCentro                            1.09   0.87   1.38  4.42e- 1
+19 macrozonaNorte                             1.39   1.12   1.73  3.36e- 3
+20 macrozonaSur                               1.02   0.883  1.18  7.67e- 1
+21 tramo_edad_ingreso20 a 24                  1.03   0.958  1.11  4.25e- 1
+22 tramo_edad_ingreso25 a 29                  0.704  0.593  0.836 6.37e- 5
+23 tramo_edad_ingreso30 o más                 0.478  0.355  0.643 1.06e- 6
+24 generoMujer                                0.761  0.717  0.807 6.38e-20
+25 tipo_plan_carrPlan Especial                1.23   0.687  2.18  4.91e- 1
+26 declara_proceso_titTRUE                    0.695  0.529  0.914 9.11e- 3
+
+== VIF ==
+# A tibble: 8 × 4
+  variable             GVIF    gl GVIF_ajustado
+  <chr>               <dbl> <dbl>         <dbl>
+1 grupo_inst           2.04     4          1.09
+2 area_conocimiento    1.74     9          1.03
+3 modalidad_jornada    2.53     3          1.17
+4 macrozona            1.22     4          1.03
+5 tramo_edad_ingreso   1.85     3          1.11
+6 genero               1.27     1          1.13
+7 tipo_plan_carr       1.21     1          1.10
+8 declara_proceso_tit  1.23     1          1.11
+
+== Ajuste ==
+# A tibble: 1 × 6
+       n     AIC devianza_nula devianza_res pseudo_R2_McFadden ratio_dispersion
+   <int>   <dbl>         <dbl>        <dbl>              <dbl>            <dbl>
+1 216435 236020.       257358.      235966.             0.0831             1.01
+
+== Métricas en test ==
+# A tibble: 1 × 7
+  n_test   AUC AUC_inf AUC_sup Brier Brier_referencia mejora_Brier_pct
+   <int> <dbl>   <dbl>   <dbl> <dbl>            <dbl>            <dbl>
+1  64931 0.692   0.687   0.696 0.182            0.203             10.1
+
+== Calibración ==
+# A tibble: 10 × 4
+   decil     n prob_predicha tasa_observada
+   <int> <int>         <dbl>          <dbl>
+ 1     1  6494        0.0902          0.115
+ 2     2  6493        0.137           0.150
+ 3     3  6493        0.175           0.169
+ 4     4  6493        0.209           0.198
+ 5     5  6493        0.245           0.247
+ 6     6  6493        0.280           0.253
+ 7     7  6493        0.312           0.296
+ 8     8  6493        0.363           0.342
+ 9     9  6493        0.432           0.466
+10    10  6493        0.571           0.591
+
+== Efectos marginales promedio (pp vs referencia) ==
+# A tibble: 30 × 4
+   variable           nivel                     prob_fuera_plazo dif_vs_ref_pp
+   <chr>              <chr>                                <dbl>         <dbl>
+ 1 grupo_inst         Universidad · profesional             36.5           0  
+ 2 grupo_inst         CFT · técnica                         25.1         -11.4
+ 3 grupo_inst         IP · profesional                      21.4         -15.2
+ 4 grupo_inst         IP · técnica                          22.4         -14.1
+ 5 grupo_inst         Universidad · técnica                 20           -16.5
+ 6 area_conocimiento  Tecnología                            36.3           0  
+ 7 area_conocimiento  Administración y Comercio             27.9          -8.4
+ 8 area_conocimiento  Agropecuaria                          35.4          -0.9
+ 9 area_conocimiento  Arte y Arquitectura                   26.7          -9.6
+10 area_conocimiento  Ciencias Básicas                      40.2           3.9
+11 area_conocimiento  Ciencias Sociales                     18.3         -18  
+12 area_conocimiento  Derecho                               57.2          20.9
+13 area_conocimiento  Educación                             18.9         -17.4
+14 area_conocimiento  Humanidades                           27.8          -8.5
+15 area_conocimiento  Salud                                 21.4         -14.9
+16 modalidad_jornada  Presencial diurna                     27.3           0  
+17 modalidad_jornada  A distancia                           33.1           5.8
+18 modalidad_jornada  Presencial vespertina                 29             1.8
+19 modalidad_jornada  Semipresencial u otra                 35.8           8.5
+20 macrozona          Metropolitana                         27             0  
+21 macrozona          Austral                               31.1           4.1
+22 macrozona          Centro                                28.7           1.6
+23 macrozona          Norte                                 33.3           6.2
+24 macrozona          Sur                                   27.4           0.4
+25 tramo_edad_ingreso 19 o menos                            31             0  
+26 tramo_edad_ingreso 20 a 24                               31.6           0.6
+27 tramo_edad_ingreso 25 a 29                               24.6          -6.5
+28 tramo_edad_ingreso 30 o más                              18.5         -12.5
+29 genero             Hombre                                30.8           0  
+30 genero             Mujer                                 25.7          -5  

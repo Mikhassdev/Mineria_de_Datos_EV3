@@ -1,0 +1,7 @@
+# Datos: el CSV original pesa 188 MB y contiene MRUN; no se publica
+data/
+.Rproj.user/
+.Rhistory
+.RData
+*_files/
+*_cache/

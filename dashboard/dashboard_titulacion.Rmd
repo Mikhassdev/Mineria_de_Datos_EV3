@@ -1,0 +1,366 @@
+---
+title: "Titulación oportuna · Pregrado Chile 2025"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    self_contained: true
+    theme:
+      version: 4
+      primary: "#2a78d6"
+      bg: "#fcfcfb"
+      fg: "#0b0b0b"
+      base_font: "system-ui, -apple-system, 'Segoe UI', sans-serif"
+    navbar:
+      - { title: "Fuente: SIES-Mineduc", href: "https://www.mifuturo.cl", align: right }
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(flexdashboard)
+library(dplyr)
+library(plotly)
+library(crosstalk)
+library(DT)
+
+x <- readRDS("datos_dashboard.rds")
+
+# Paleta validada (skill dataviz, palette.md) y formatos en español
+AZUL <- "#2a78d6"; NARANJA <- "#eb6834"; GRIS <- "#898781"; TXT2 <- "#52514e"
+pct  <- function(v, d = 1) paste0(formatC(v, format = "f", digits = d, decimal.mark = ","), " %")
+num  <- function(v) formatC(v, format = "d", big.mark = ".", decimal.mark = ",")
+pp   <- function(v) paste0(ifelse(v > 0, "+", ""), formatC(v, format = "f", digits = 1, decimal.mark = ","), " pp")
+fch  <- function(f) format(f, "%d-%m-%Y")
+
+# Estado frente a la meta usando el IC 95 % (misma regla en todo el panel)
+estado_meta <- function(ic_inf, ic_sup) {
+  factor(case_when(ic_sup < x$meta  ~ "Bajo la meta",
+                   ic_inf >= x$meta ~ "En o sobre la meta",
+                   TRUE             ~ "No concluyente (IC cruza la meta)"),
+         levels = c("Bajo la meta", "No concluyente (IC cruza la meta)", "En o sobre la meta"))
+}
+COLORES_ESTADO <- c("Bajo la meta" = NARANJA, "No concluyente (IC cruza la meta)" = GRIS,
+                    "En o sobre la meta" = AZUL)
+
+g  <- x$kpi_global
+kd <- x$kpi_dim
+gi <- kd |> filter(dimension == "grupo_inst")
+mejor <- gi |> slice_max(pct, n = 1); peor <- gi |> slice_min(pct, n = 1)
+ar <- kd |> filter(dimension == "area_conocimiento") |> slice_min(pct, n = 1)
+
+pie_kpi <- sprintf("Unidad: %% de titulaciones · Período: año académico 2025 · Fuente: SIES-Mineduc · Datos al %s",
+                   fch(x$fecha_datos))
+
+# Gráfico de puntos con IC 95 % y línea de meta (reutilizable)
+puntos_ic <- function(t, alto = 300) {
+  t <- t |> filter(!is.na(valor), valor != "NA") |> arrange(pct) |>
+    mutate(valor = factor(valor, levels = valor),
+           estado = estado_meta(ic_inf, ic_sup))
+  plot_ly(t, x = ~pct, y = ~valor, type = "scatter", mode = "markers",
+          color = ~estado, colors = COLORES_ESTADO,
+          marker = list(size = 11),
+          error_x = list(type = "data", symmetric = FALSE, array = ~ic_sup - pct,
+                         arrayminus = ~pct - ic_inf, color = TXT2, thickness = 1.2, width = 4),
+          text = ~paste0("<b>", valor, "</b><br>Oportuna: ", pct(pct),
+                         "<br>IC 95 %: ", pct(ic_inf), " – ", pct(ic_sup),
+                         "<br>Titulados: ", num(n),
+                         "<br>Mediana de atraso: ", mediana_sobreduracion, " sem."),
+          hoverinfo = "text", height = alto) |>
+    layout(xaxis = list(title = "% titulación oportuna", ticksuffix = " %",
+                        range = c(min(20, floor(min(t$ic_inf) / 10) * 10), 100), gridcolor = "#e1e0d9"),
+           yaxis = list(title = ""),
+           shapes = list(list(type = "line", x0 = x$meta, x1 = x$meta, y0 = 0, y1 = 1, yref = "paper",
+                              line = list(color = NARANJA, dash = "dash", width = 1.5))),
+           annotations = list(list(x = x$meta, y = 1.02, yref = "paper", text = paste0("Meta ", x$meta, " %"),
+                                   showarrow = FALSE, font = list(color = NARANJA, size = 11), xanchor = "left")),
+           legend = list(orientation = "h", y = -0.25), margin = list(l = 10, r = 10, t = 30)) |>
+    config(displaylogo = FALSE, modeBarButtonsToRemove = c("lasso2d", "select2d"))
+}
+```
+
+Resumen
+=====================================================================
+
+Row {data-height=170}
+---------------------------------------------------------------------
+
+### Titulación oportuna (meta `r x$meta` %)
+
+```{r}
+gauge(round(g$pct, 1), min = 0, max = 100, symbol = "%",
+      gaugeSectors(success = c(x$meta, 100), warning = c(x$meta - 10, x$meta), danger = c(0, x$meta - 10)),
+      label = paste0("IC 95 %: ", pct(g$ic_inf), "–", pct(g$ic_sup)))
+```
+
+### Brecha entre tipos de institución
+
+```{r}
+valueBox(pp(peor$pct - mejor$pct),
+         caption = paste0(peor$valor, " (", pct(peor$pct), ") vs ", mejor$valor, " (", pct(mejor$pct), ")"),
+         icon = "fa-arrows-alt-h", color = "warning")
+```
+
+### Área más crítica
+
+```{r}
+valueBox(pct(ar$pct), caption = paste0(ar$valor, ": titulación oportuna (", num(ar$n), " titulados)"),
+         icon = "fa-exclamation-triangle", color = "danger")
+```
+
+### Mediana de atraso
+
+```{r}
+valueBox(paste(g$mediana_sobreduracion, "semestre"),
+         caption = paste0("sobre la duración teórica · ", pct(g$pct_mas_doble), " tarda más del doble"),
+         icon = "fa-clock", color = "info")
+```
+
+### Titulaciones analizadas
+
+```{r}
+valueBox(num(g$n), caption = "pregrado, año académico 2025 (tras reglas de calidad)",
+         icon = "fa-user-graduate", color = "primary")
+```
+
+Row {data-height=40}
+---------------------------------------------------------------------
+
+<div style="font-size:12px;color:#52514e;padding:4px 8px;">`r pie_kpi`. **Oportuna** = titulación dentro de la duración teórica + `r x$holgura` semestres. Meta referencial definida por el equipo. Naranja = todo el IC 95 % bajo la meta; gris = el IC cruza la meta (no concluyente).</div>
+
+Row {data-height=420}
+---------------------------------------------------------------------
+
+### ¿Qué ocurre? Las carreras profesionales universitarias concentran el atraso
+
+```{r}
+puntos_ic(filter(kd, dimension == "grupo_inst"))
+```
+
+### ¿Dónde? Derecho y Ciencias Básicas están muy por debajo del resto
+
+```{r}
+puntos_ic(filter(kd, dimension == "area_conocimiento"))
+```
+
+Row {data-height=380}
+---------------------------------------------------------------------
+
+### Por región de la sede: el norte rinde bajo el promedio
+
+```{r}
+puntos_ic(filter(kd, dimension == "region_sede"), alto = 360)
+```
+
+### Lectura para la decisión {data-width=380}
+
+**Qué ocurre.** Cerca de 3 de cada 10 titulados de pregrado 2025 terminó más de un año después de la duración teórica de su carrera.
+
+**Dónde se concentra.** En carreras profesionales universitarias (`r pct(peor$pct)` oportuna), en Derecho (`r pct(ar$pct)`) y en sedes de la macrozona norte.
+
+**Qué acción podría tomarse.** Priorizar el seguimiento del avance curricular y del proceso de titulación (tesis, examen de grado) en esas carreras. Usa la página **Explorar** para identificar las instituciones con mayor volumen bajo la meta.
+
+<span style="color:#d03b3b">⚠</span> **Advertencia:** los datos incluyen **solo a quienes se titularon**; quienes desertaron no aparecen. Las diferencias son **asociaciones**, no efectos causales.
+
+Factores asociados
+=====================================================================
+
+Row {data-height=175}
+---------------------------------------------------------------------
+
+### Cómo leer esta página {data-width=650}
+
+Regresión logística sobre `r num(g$n)` titulaciones. Cada barra muestra **cuántos puntos porcentuales cambia la probabilidad de titularse fuera de plazo** respecto de la categoría de referencia (en gris claro), **manteniendo constantes** las demás variables. Gris = diferencia no significativa (IC 95 % del odds ratio incluye 1; errores agrupados por institución).
+
+### Capacidad del modelo
+
+```{r}
+valueBox(formatC(x$metricas$AUC, format = "f", digits = 3, decimal.mark = ","),
+         caption = paste0("AUC en datos de prueba (30 %). Moderado: sirve para identificar factores, no para predecir casos individuales."),
+         icon = "fa-check-circle", color = "#52514e")
+```
+
+Row {data-height=640}
+---------------------------------------------------------------------
+
+### Efecto ajustado sobre la probabilidad de titularse fuera de plazo (puntos porcentuales)
+
+```{r}
+nombres <- c(grupo_inst = "Institución · nivel", area_conocimiento = "Área",
+             modalidad_jornada = "Modalidad", macrozona = "Macrozona",
+             tramo_edad_ingreso = "Edad al ingreso", genero = "Género")
+ef <- x$efectos |>
+  mutate(grupo = nombres[variable],
+         estado = case_when(es_referencia ~ "Referencia",
+                            !significativo ~ "No significativa",
+                            dif_vs_ref_pp > 0 ~ "Más atraso",
+                            TRUE ~ "Menos atraso"),
+         etiqueta = paste0(grupo, ": ", nivel))
+ef <- ef |> arrange(match(variable, names(nombres)), dif_vs_ref_pp) |>
+  mutate(etiqueta = factor(etiqueta, levels = rev(unique(etiqueta))))
+plot_ly(ef, x = ~dif_vs_ref_pp, y = ~etiqueta, type = "bar", orientation = "h",
+        color = ~estado,
+        colors = c("Más atraso" = NARANJA, "Menos atraso" = AZUL,
+                   "No significativa" = GRIS, "Referencia" = "#e1e0d9"),
+        text = ~ifelse(es_referencia, "ref.", pp(dif_vs_ref_pp)), textposition = "outside",
+        cliponaxis = FALSE,
+        hovertext = ~paste0("<b>", etiqueta, "</b><br>Prob. fuera de plazo: ", pct(prob_fuera_plazo),
+                            "<br>Diferencia vs referencia: ", pp(dif_vs_ref_pp),
+                            ifelse(is.na(OR), "<br>(categoría de referencia)",
+                                   paste0("<br>OR ", formatC(OR, format = "f", digits = 2, decimal.mark = ","),
+                                          " (IC 95 %: ", formatC(OR_inf, format = "f", digits = 2, decimal.mark = ","),
+                                          "–", formatC(OR_sup, format = "f", digits = 2, decimal.mark = ","), ")"))),
+        hoverinfo = "text", height = 620) |>
+  layout(xaxis = list(title = "Diferencia en puntos porcentuales (pp)", zeroline = TRUE,
+                      range = c(min(ef$dif_vs_ref_pp) - 9, max(ef$dif_vs_ref_pp) + 9),
+                      zerolinecolor = TXT2, gridcolor = "#e1e0d9"),
+         yaxis = list(title = "", tickfont = list(size = 11)),
+         legend = list(orientation = "h", x = 0, y = 1, yanchor = "bottom"), bargap = 0.35,
+         margin = list(l = 10, t = 40)) |>
+  config(displaylogo = FALSE)
+```
+
+### Calibración y robustez {data-width=380}
+
+```{r}
+cal <- x$calibracion
+plot_ly(cal, x = ~100 * prob_predicha, y = ~100 * tasa_observada, type = "scatter",
+        mode = "lines+markers", line = list(color = AZUL, width = 2), marker = list(size = 9, color = AZUL),
+        text = ~paste0("Decil ", decil, "<br>Predicho: ", pct(100 * prob_predicha),
+                       "<br>Observado: ", pct(100 * tasa_observada)), hoverinfo = "text",
+        name = "Deciles", height = 330) |>
+  add_lines(x = c(0, 70), y = c(0, 70), line = list(color = GRIS, dash = "dash", width = 1),
+            name = "Calibración perfecta", inherit = FALSE, hoverinfo = "none") |>
+  layout(xaxis = list(title = "% predicho fuera de plazo", range = c(0, 70)),
+         yaxis = list(title = "% observado", range = c(0, 70)),
+         legend = list(orientation = "h", y = -0.3)) |>
+  config(displaylogo = FALSE)
+```
+
+**Lectura:** los puntos siguen la diagonal, así que las probabilidades del modelo son confiables en promedio.
+
+**Robustez:** al agregar la duración teórica de la carrera las conclusiones por área, género, edad y región no cambian; la diferencia de los **CFT** sí depende de esa especificación, por lo que no se recomienda actuar sobre ella sin más análisis.
+
+**Edad al ingreso:** que quienes entran con más de 30 años se titulen más a tiempo probablemente refleja **sesgo de supervivencia** (los que se atrasan abandonan y no aparecen en los datos).
+
+Explorar instituciones
+=====================================================================
+
+```{r}
+cel <- x$celdas |>
+  transmute(Institución = nomb_inst, `Tipo` = tipo_inst_1, `Grupo` = grupo_inst,
+            `Área` = area_conocimiento, Macrozona = macrozona,
+            Titulados = n, `% oportuna` = round(pct, 1),
+            `IC inf` = round(ic_inf, 1), `IC sup` = round(ic_sup, 1),
+            `Atraso mediano (sem.)` = mediana_sobreduracion,
+            Estado = estado_meta(ic_inf, ic_sup),
+            titulados_fuera = n - n_oportuna)
+sd <- SharedData$new(cel, group = "celdas")
+```
+
+Inputs {.sidebar data-width=260}
+---------------------------------------------------------------------
+
+**Filtros** (se aplican al gráfico y a la tabla)
+
+```{r}
+filter_select("f_grupo", "Institución · nivel", sd, ~Grupo)
+filter_select("f_area", "Área del conocimiento", sd, ~`Área`)
+filter_select("f_macro", "Macrozona de la sede", sd, ~Macrozona)
+filter_checkbox("f_estado", "Estado respecto de la meta", sd, ~Estado, inline = FALSE)
+filter_slider("f_n", "Titulados en la celda", sd, ~Titulados, round = TRUE)
+```
+
+---
+
+<small>Cada punto es una **institución × nivel × área × macrozona**. Se ocultan las celdas con menos de `r x$n_min_celda` titulados (`r num(x$n_celdas_excl)` celdas) para evitar porcentajes inestables. **Abajo a la derecha** del gráfico están las celdas de **mayor volumen y menor % oportuna**: ahí una mejora tendría más impacto. El estado usa el IC 95 % (gris = no concluyente).</small>
+
+Row {data-height=470}
+---------------------------------------------------------------------
+
+### ¿Dónde actuar? Volumen de titulados vs % de titulación oportuna
+
+```{r}
+plot_ly(sd, x = ~Titulados, y = ~`% oportuna`, type = "scatter", mode = "markers",
+        color = ~Estado, colors = COLORES_ESTADO,
+        marker = list(size = 9, opacity = 0.75, line = list(color = "#fcfcfb", width = 1)),
+        text = ~paste0("<b>", Institución, "</b><br>", Grupo, " · ", `Área`, " · ", Macrozona,
+                       "<br>Oportuna: ", pct(`% oportuna`), " (IC ", pct(`IC inf`), "–", pct(`IC sup`), ")",
+                       "<br>Titulados: ", num(Titulados),
+                       "<br>Titulados fuera de plazo: ", num(titulados_fuera)),
+        hoverinfo = "text", height = 450) |>
+  layout(xaxis = list(title = "Titulados (escala logarítmica)", type = "log", gridcolor = "#e1e0d9"),
+         yaxis = list(title = "% titulación oportuna", ticksuffix = " %", range = c(0, 102)),
+         shapes = list(list(type = "line", y0 = x$meta, y1 = x$meta, x0 = 0, x1 = 1, xref = "paper",
+                            line = list(color = NARANJA, dash = "dash", width = 1.5))),
+         legend = list(orientation = "h", y = -0.15)) |>
+  highlight(on = "plotly_click", off = "plotly_doubleclick", color = "#4a3aa7") |>
+  config(displaylogo = FALSE)
+```
+
+Row {data-height=720}
+---------------------------------------------------------------------
+
+### Detalle (ordenado por titulados fuera de plazo: dónde una mejora tiene más impacto)
+
+```{r}
+datatable(sd, rownames = FALSE, extensions = "Buttons", fillContainer = FALSE,
+          options = list(pageLength = 10,
+                         language = list(search = "Buscar:", info = "Mostrando _START_ a _END_ de _TOTAL_ celdas",
+                                         infoEmpty = "Sin resultados", infoFiltered = "(filtrado de _MAX_)",
+                                         zeroRecords = "No hay celdas que cumplan los filtros",
+                                         paginate = list(previous = "Anterior", `next` = "Siguiente")), order = list(list(11, "desc")), dom = "Bfrtip",
+                         buttons = list("csv"), scrollX = TRUE,
+                         columnDefs = list(list(visible = FALSE, targets = c(1)))),
+          colnames = c("Titulados fuera de plazo" = "titulados_fuera")) |>
+  formatStyle("Estado", color = styleEqual(names(COLORES_ESTADO), unname(COLORES_ESTADO)),
+              fontWeight = "bold")
+```
+
+Datos y método
+=====================================================================
+
+Row
+---------------------------------------------------------------------
+
+### Definición de los KPI
+
+| KPI | Definición | Unidad | Meta | Período | Fuente | Actualización |
+|---|---|---|---|---|---|---|
+| Titulación oportuna | Titulaciones con semestres transcurridos ≤ duración teórica + `r x$holgura` | % de titulaciones | `r x$meta` % (referencial) | Año académico 2025 (ene-2025 a feb-2026) | SIES-Mineduc | Datos: `r fch(x$fecha_datos)` · Panel: `r fch(x$generado)` |
+| Brecha entre tipos de institución | Diferencia entre el grupo con menor y mayor % oportuna | puntos porcentuales | Reducir | Año académico 2025 | SIES-Mineduc | Ídem |
+| Mediana de atraso | Mediana de (semestres transcurridos − duración teórica) | semestres | ≤ 1 | Año académico 2025 | SIES-Mineduc | Ídem |
+| % que tarda más del doble | Titulaciones con más del doble de la duración teórica | % de titulaciones | Monitoreo | Año académico 2025 | SIES-Mineduc | Ídem |
+
+**Semestres transcurridos**: desde el semestre de ingreso a la carrera (`anio_ing_carr_ori`) hasta el semestre académico de titulación (marzo–julio = S1; agosto–febrero = S2), ambos inclusive.
+
+### Pregunta y audiencia {data-width=420}
+
+**Pregunta:** ¿qué características de la carrera, la institución y el estudiante se asocian con titularse fuera de plazo en pregrado?
+
+**Audiencia:** direcciones académicas y de análisis institucional que deciden dónde focalizar apoyo al avance curricular y a la titulación.
+
+**Unidad de análisis:** la titulación (un registro). Una persona con dos títulos aporta dos registros.
+
+Row
+---------------------------------------------------------------------
+
+### Bitácora de calidad de datos (cada regla, en orden)
+
+```{r}
+x$bitacora |>
+  transmute(Paso = paso, Dimensión = dimension, Regla = regla,
+            `Filas antes` = num(filas_antes), `Filas después` = num(filas_despues),
+            Eliminadas = num(eliminadas)) |>
+  knitr::kable()
+```
+
+### Limitaciones y advertencias {data-width=420}
+
+- **Sesgo de supervivencia:** solo hay titulados; no se observa a quienes desertaron. No es una tasa de titulación del sistema.
+- **Asociación, no causalidad:** el diseño es observacional; no hay variables de rendimiento, financiamiento ni trabajo.
+- **Duración teórica heterogénea:** algunas instituciones declaran el proceso de titulación sin sumarlo a la duración total; se controla con una variable, pero puede quedar sesgo residual.
+- **Planes de continuidad excluidos** (4.526): su año de ingreso corresponde a la carrera de origen.
+- **Un solo año (2025):** no permite ver tendencias.
+- **Privacidad:** se eliminaron MRUN y fecha de nacimiento; el panel solo muestra datos agregados (celdas ≥ `r x$n_min_celda`).
+
+Reproducible con `source("R/run_all.R")` (incluye la generación del dashboard).
