@@ -504,12 +504,115 @@ def resumen():
       vineta("Validar con el docente la meta referencial del 75 % y el criterio de holgura de 2 semestres."),
       vineta("Preparar la presentación oral y distribuir la participación entre los integrantes."))
 
+    # ---------------------------------------------------------- limpieza de datos
+    elim = {b["paso"]: int(b["eliminadas"]) for b in bit}
+    sin_info = chq["Rango de edad 'Sin Información'"]
+    ini_f, fin_f = int(chq["Registros totales"]), int(kg["n"])
+    criterio = {
+        "R1": "La pregunta es sobre pregrado; se excluyen posgrado y postítulo (no es un error del dato, es alcance)",
+        "R2": "Códigos especiales del diccionario (1900, 9995, 9998, 9999 = sin información u otro programa): no permiten calcular la duración",
+        "R3": "Valor fuera de dominio",
+        "R4": "Fecha con formato inválido o fuera del año académico 2025 (ene-2025 a feb-2026)",
+        "R5": "Sin duración teórica no se puede medir el atraso",
+        "R6": "La titulación no puede ser anterior al ingreso",
+        "R7": "El año de ingreso corresponde a la carrera de origen: el atraso queda mal medido",
+        "R8": "Minimización de datos personales (solo elimina columnas)",
+    }
+    A(h1("Limpieza de datos"),
+      p("**Sí, hubo limpieza de datos.** Se hizo completamente por código en R (scripts *R/01_carga.R* y "
+        "*R/02_calidad.R*), sin modificar el archivo original, y cada regla quedó registrada en una bitácora automática "
+        "(*output/tablas/bitacora_calidad.csv*) con las filas antes y después."),
+      h3("Dimensiones del dataset: inicio y fin"),
+      tabla(["Etapa", "Filas", "Columnas", "Detalle"], [
+          ["Dataset original (CSV SIES)", ent(ini_f), "41", "Archivo sin modificar, verificado con hash SHA-256"],
+          ["Dataset limpio (análisis)", ent(fin_f), "54",
+           "41 originales − 4 eliminadas + 17 variables derivadas"],
+          ["Datos del modelo", ent(n_mod), "11", "Respuesta + 8 predictores + institución (errores agrupados) + duración "
+                                                 "teórica (sensibilidad). Se excluye 1 registro sin edad de ingreso"],
+          ["Datos del dashboard", "861 celdas", "14",
+           "Agregados institución × nivel × área × macrozona (n ≥ 30); sin registros individuales"],
+      ], [1.7, 1, 0.8, 2.8], ["left", "right", "center", "left"]),
+      p(f"En total se eliminaron **{ent(ini_f - fin_f)} filas ({num(100 * (ini_f - fin_f) / ini_f)} %)**. Conviene "
+        f"distinguir el motivo: {ent(elim['R1'])} filas salieron por **alcance** (no son pregrado), "
+        f"{ent(elim['R2'])} por **datos no válidos** y {ent(elim['R7'])} por **validez de medición**."),
+      h3("Filas eliminadas: regla, criterio y cantidad"),
+      tabla(["Paso", "Regla", "Criterio", "Filas antes", "Eliminadas", "Filas después"],
+            [[b["paso"], b["regla"], criterio[b["paso"]], ent(b["filas_antes"]), ent(b["eliminadas"]),
+              ent(b["filas_despues"])] for b in bit],
+            [0.45, 2.1, 2.3, 0.85, 0.85, 0.85], ["center", "left", "left", "right", "right", "right"], tam=15),
+      p("Las reglas R3 a R6 no eliminaron filas: funcionaron como **verificaciones** que confirman que los datos "
+        "cumplen esas condiciones."),
+      h3("Columnas eliminadas"),
+      tabla(["Columna", "Criterio"], [
+          ["mrun", "Identificador de la persona (dato personal). No se necesita para el análisis"],
+          ["fec_nac_alu", "Fecha de nacimiento (cuasi-identificador). Antes de eliminarla se calculó la edad al ingreso en tramos"],
+          ["nombre_titulo", "Texto libre del título; no se usa y ayuda a reidentificar"],
+          ["nombre_grado", "Texto libre del grado; vacío en 201.664 filas y no se usa"],
+      ], [1.2, 4]),
+      h3("Columnas agregadas (17 variables derivadas)"),
+      tabla(["Grupo", "Columnas", "Para qué"], [
+          ["Tiempo de titulación", "fecha_titulo, mes_titulo, anio_acad_titulo, sem_titulo, sem_transcurridos, "
+                                   "sobreduracion_sem, ratio_duracion", "Medir cuánto tardó cada titulación"],
+          ["Variable respuesta", "a_tiempo_estricto, titulacion_oportuna, fuera_de_plazo", "KPI y variable del modelo"],
+          ["Recodificaciones", "genero, tramo_edad_ingreso, modalidad_jornada, grupo_inst, macrozona",
+           "Categorías legibles y sin redundancia (jornada y modalidad repetían información)"],
+          ["Controles de calidad", "declara_proceso_tit, atipico_duracion",
+           "Marcar heterogeneidad de reporte y casos extremos (se marcan, no se eliminan)"],
+      ], [1.2, 2.8, 1.8], tam=16),
+      h3("Problemas detectados que NO se eliminaron (y por qué)"),
+      vineta(f"**{ent(chq['MRUN con más de un título (registros adicionales)'])} MRUN repetidos:** son personas con más de "
+             "un título, no duplicados. La unidad de análisis es la titulación, así que se conservan."),
+      vineta(f"**{ent(chq['Registros con MRUN vacío'])} filas sin MRUN:** el MRUN no se usa en el análisis; eliminarlas "
+             "habría perdido información válida."),
+      vineta(f"**{ent(sin_info)} filas con edad "
+             "“Sin Información”:** se convirtieron en valor faltante (NA), no se eliminaron."),
+      vineta(f"**{num(kg['pct_mas_doble'])} % tarda más del doble de lo teórico:** son valores extremos pero plausibles "
+             "(personas que retoman sus estudios); se marcan con *atipico_duracion* y se conservan."),
+      vineta("**Corrección clave:** una primera versión de la regla R4 eliminaba 40.522 filas (18 %) con fecha en enero y "
+             "febrero de 2026. Se revisó y se corrigió, porque esas fechas pertenecen al cierre del año académico 2025."))
+
+    # ---------------------------------------------------------- herramientas
+    A(h1("Herramientas utilizadas"),
+      h3("Funciones y comandos para la limpieza del dataset"),
+      tabla(["Función o comando", "Paquete", "Uso en la limpieza"], [
+          ["read_delim() con cols()", "readr", "Leer el CSV (separador “;”, UTF-8) con tipos de columna explícitos"],
+          ["problems()", "readr", "Verificar que no hubo errores de lectura (resultado: 0)"],
+          ["digest()", "digest", "Calcular el hash SHA-256 y comprobar que el archivo original no cambió"],
+          ["is.na(), n_distinct(), vapply()", "base / dplyr", "Perfilado: vacíos y valores distintos por columna"],
+          ["filter() con between(), %in% y grepl()", "dplyr / base", "Aplicar las reglas de validez (rangos, dominios y formato de fecha con expresión regular)"],
+          ["nrow() + add_row()", "base / tibble", "Registrar en la bitácora las filas antes y después de cada regla"],
+          ["mutate(), case_when(), if_else()", "dplyr", "Crear variables derivadas y recodificar categorías"],
+          ["as.Date(), format()", "base", "Convertir la fecha AAAAMMDD y obtener mes y año académico"],
+          ["na_if()", "dplyr", "Convertir “Sin Información” en valor faltante"],
+          ["cut()", "base", "Agrupar la edad al ingreso en tramos"],
+          ["select(-columna)", "dplyr", "Eliminar columnas con datos personales"],
+          ["drop_na()", "tidyr", "Excluir el registro sin edad de ingreso antes del modelo"],
+          ["write_csv(), saveRDS()", "readr / base", "Guardar la bitácora, el perfil y los datos limpios"],
+      ], [1.8, 1, 2.8], tam=16),
+      h3("Librerías utilizadas para el dashboard"),
+      tabla(["Librería", "Función en el dashboard"], [
+          ["flexdashboard", "Estructura del panel: páginas, filas, barra lateral, gauge y cajas de KPI"],
+          ["rmarkdown", "Generar el HTML a partir del archivo .Rmd"],
+          ["plotly", "Gráficos interactivos (puntos con IC, barras de efectos, calibración, dispersión)"],
+          ["crosstalk", "Filtros enlazados entre el gráfico y la tabla sin necesidad de servidor"],
+          ["DT", "Tabla interactiva con búsqueda, orden, paginación y descarga CSV"],
+          ["dplyr", "Preparar los datos agregados que muestra el panel"],
+          ["knitr", "Tabla de la bitácora de calidad en la página “Datos y método”"],
+      ], [1.3, 4]),
+      p("**Para el análisis estadístico** (no para el dashboard) se usaron además broom, sandwich, lmtest, car y pROC, y "
+        "ggplot2 para las figuras del informe."))
+
     d.guardar(os.path.join(RAIZ, "informe", "Resumen_Problematica_y_Avance.docx"),
               portada("Resumen: problemática y trabajo realizado",
                       "Titulación oportuna en pregrado, Chile 2025"),
               "Resumen · Titulación oportuna en pregrado 2025", con_indice=False)
 
 if __name__ == "__main__":
-    informe()
-    resumen()
-    print("Documentos generados en informe/")
+    # Uso: python informe/generar_documentos.py [informe] [resumen]   (sin argumentos: ambos)
+    # Ojo: regenerar sobrescribe el .docx, incluidos los datos de portada completados a mano.
+    pedidos = sys.argv[1:] or ["informe", "resumen"]
+    if "informe" in pedidos:
+        informe()
+    if "resumen" in pedidos:
+        resumen()
+    print("Generado:", ", ".join(pedidos))
