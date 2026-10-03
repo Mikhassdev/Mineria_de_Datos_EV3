@@ -10,3 +10,7 @@ informe/*.docx
 informe/*.pdf
 informe/_plantilla/
 ~$*
+
+# Dependencias de Node para generar la presentación
+presentacion/node_modules/
+presentacion/*.pptx
