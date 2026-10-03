@@ -54,7 +54,7 @@ graficar_dim <- function(dim, titulo, archivo) {
   ggsave(file.path("output/figuras", archivo), g, width = 8, height = 4.5, dpi = 150, bg = "white")
 }
 
-graficar_dim("grupo_inst", "Las carreras profesionales universitarias tienen la menor titulación oportuna",
+graficar_dim("grupo_inst", "Menor titulación oportuna en carreras profesionales universitarias",
              "fig_01_grupo_inst.png")
 graficar_dim("area_conocimiento", "Titulación oportuna por área del conocimiento", "fig_02_area.png")
 graficar_dim("modalidad_jornada", "Titulación oportuna por modalidad y jornada", "fig_03_modalidad.png")

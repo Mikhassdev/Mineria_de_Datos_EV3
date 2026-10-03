@@ -1,0 +1,12 @@
+/* La página nunca se desplaza horizontalmente: con la barra lateral fija,
+   un desplazamiento de página superpone los filtros sobre el contenido. */
+html, body { overflow-x: hidden; }
+
+/* Si una tabla no cabe, se desplaza dentro de su propia tarjeta */
+.chart-stage { overflow-x: auto; }
+.dataTables_wrapper { width: 100%; overflow-x: auto; }
+
+/* Tabla compacta y legible */
+table.dataTable { width: 100% !important; font-size: 13px; }
+table.dataTable thead th { white-space: nowrap; }
+table.dataTable td.dt-right, table.dataTable th.dt-right { white-space: nowrap; }

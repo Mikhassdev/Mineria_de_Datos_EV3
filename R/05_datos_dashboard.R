@@ -42,6 +42,7 @@ insumos <- list(
   n_celdas_excl   = nrow(resumir_kpi(d, nomb_inst, grupo_inst, area_conocimiento, macrozona)) - nrow(celdas),
   efectos         = efectos,
   metricas        = modelo$metricas,
+  n_modelo        = modelo$ajuste$n,
   calibracion     = modelo$calibracion,
   sensibilidad    = modelo$sensibilidad
 )

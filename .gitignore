@@ -5,3 +5,8 @@ data/
 .RData
 *_files/
 *_cache/
+# Informe: contiene nombres del equipo y plantilla institucional; solo se versionan los generadores
+informe/*.docx
+informe/*.pdf
+informe/_plantilla/
+~$*

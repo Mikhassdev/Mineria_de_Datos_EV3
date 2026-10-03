@@ -5,6 +5,7 @@ output:
     orientation: rows
     vertical_layout: scroll
     self_contained: true
+    css: estilos.css
     theme:
       version: 4
       primary: "#2a78d6"
@@ -169,7 +170,7 @@ Row {data-height=175}
 
 ### Cómo leer esta página {data-width=650}
 
-Regresión logística sobre `r num(g$n)` titulaciones. Cada barra muestra **cuántos puntos porcentuales cambia la probabilidad de titularse fuera de plazo** respecto de la categoría de referencia (en gris claro), **manteniendo constantes** las demás variables. Gris = diferencia no significativa (IC 95 % del odds ratio incluye 1; errores agrupados por institución).
+Regresión logística sobre `r num(x$n_modelo)` titulaciones (se excluye 1 registro sin edad de ingreso). Cada barra muestra **cuántos puntos porcentuales cambia la probabilidad de titularse fuera de plazo** respecto de la categoría de referencia (en gris claro), **manteniendo constantes** las demás variables. Gris = diferencia no significativa (IC 95 % del odds ratio incluye 1; errores agrupados por institución).
 
 ### Capacidad del modelo
 
@@ -179,7 +180,7 @@ valueBox(formatC(x$metricas$AUC, format = "f", digits = 3, decimal.mark = ","),
          icon = "fa-check-circle", color = "#52514e")
 ```
 
-Row {data-height=640}
+Row {data-height=820}
 ---------------------------------------------------------------------
 
 ### Efecto ajustado sobre la probabilidad de titularse fuera de plazo (puntos porcentuales)
@@ -247,13 +248,15 @@ Explorar instituciones
 
 ```{r}
 cel <- x$celdas |>
-  transmute(Institución = nomb_inst, `Tipo` = tipo_inst_1, `Grupo` = grupo_inst,
+  transmute(Institución = nomb_inst, Grupo = grupo_inst,
             `Área` = area_conocimiento, Macrozona = macrozona,
-            Titulados = n, `% oportuna` = round(pct, 1),
-            `IC inf` = round(ic_inf, 1), `IC sup` = round(ic_sup, 1),
-            `Atraso mediano (sem.)` = mediana_sobreduracion,
+            Titulados = n, `Fuera de plazo` = n - n_oportuna,
+            `% oportuna` = round(pct, 1),
+            `IC 95 %` = paste0(formatC(ic_inf, format = "f", digits = 1, decimal.mark = ","), "–",
+                               formatC(ic_sup, format = "f", digits = 1, decimal.mark = ",")),
+            `Atraso (sem.)` = mediana_sobreduracion,
             Estado = estado_meta(ic_inf, ic_sup),
-            titulados_fuera = n - n_oportuna)
+            ic_inf = round(ic_inf, 1), ic_sup = round(ic_sup, 1))
 sd <- SharedData$new(cel, group = "celdas")
 ```
 
@@ -284,9 +287,9 @@ plot_ly(sd, x = ~Titulados, y = ~`% oportuna`, type = "scatter", mode = "markers
         color = ~Estado, colors = COLORES_ESTADO,
         marker = list(size = 9, opacity = 0.75, line = list(color = "#fcfcfb", width = 1)),
         text = ~paste0("<b>", Institución, "</b><br>", Grupo, " · ", `Área`, " · ", Macrozona,
-                       "<br>Oportuna: ", pct(`% oportuna`), " (IC ", pct(`IC inf`), "–", pct(`IC sup`), ")",
+                       "<br>Oportuna: ", pct(`% oportuna`), " (IC ", pct(ic_inf), "–", pct(ic_sup), ")",
                        "<br>Titulados: ", num(Titulados),
-                       "<br>Titulados fuera de plazo: ", num(titulados_fuera)),
+                       "<br>Titulados fuera de plazo: ", num(`Fuera de plazo`)),
         hoverinfo = "text", height = 450) |>
   layout(xaxis = list(title = "Titulados (escala logarítmica)", type = "log", gridcolor = "#e1e0d9"),
          yaxis = list(title = "% titulación oportuna", ticksuffix = " %", range = c(0, 102)),
@@ -300,7 +303,7 @@ plot_ly(sd, x = ~Titulados, y = ~`% oportuna`, type = "scatter", mode = "markers
 Row {data-height=720}
 ---------------------------------------------------------------------
 
-### Detalle (ordenado por titulados fuera de plazo: dónde una mejora tiene más impacto)
+### Detalle: ordenado por titulados fuera de plazo (dónde una mejora tiene más impacto)
 
 ```{r}
 datatable(sd, rownames = FALSE, extensions = "Buttons", fillContainer = FALSE,
@@ -308,10 +311,12 @@ datatable(sd, rownames = FALSE, extensions = "Buttons", fillContainer = FALSE,
                          language = list(search = "Buscar:", info = "Mostrando _START_ a _END_ de _TOTAL_ celdas",
                                          infoEmpty = "Sin resultados", infoFiltered = "(filtrado de _MAX_)",
                                          zeroRecords = "No hay celdas que cumplan los filtros",
-                                         paginate = list(previous = "Anterior", `next` = "Siguiente")), order = list(list(11, "desc")), dom = "Bfrtip",
-                         buttons = list("csv"), scrollX = TRUE,
-                         columnDefs = list(list(visible = FALSE, targets = c(1)))),
-          colnames = c("Titulados fuera de plazo" = "titulados_fuera")) |>
+                                         paginate = list(previous = "Anterior", `next` = "Siguiente")),
+                         # columnas (base 0): 5 = Fuera de plazo; 10 y 11 = IC numéricos (solo para el gráfico)
+                         order = list(list(5, "desc")), dom = "Bfrtip", buttons = list("csv"),
+                         autoWidth = FALSE,
+                         columnDefs = list(list(visible = FALSE, targets = c(10, 11)),
+                                           list(className = "dt-right", targets = 4:8)))) |>
   formatStyle("Estado", color = styleEqual(names(COLORES_ESTADO), unname(COLORES_ESTADO)),
               fontWeight = "bold")
 ```
