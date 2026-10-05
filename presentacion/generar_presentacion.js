@@ -152,7 +152,7 @@ async function construir() {
   s.addText("¿Quién se titula a tiempo?", { placeholder: "title" });
   T(s, "Titulación oportuna en pregrado · Chile 2025", { x: 0.7, y: 3.1, w: 7.8, h: 0.55, fontSize: 24, color: C.background1 });
   T(s, "Análisis estadístico en R y dashboard para apoyar decisiones académicas", { x: 0.7, y: 3.7, w: 7.6, h: 0.8, fontSize: 17, color: GRIS_CLARO_OSCURO });
-  T(s, [{ text: "Integrantes: ", options: { bold: true } }, { text: "[Tu nombre] · Ignacio Larama Paycho · Johan Matos Chauca" }],
+  T(s, [{ text: "Integrantes: ", options: { bold: true } }, { text: "Ignacio Larama Paycho · Miguel Jorquera Marín · Johan Matos Chauca" }],
     { x: 0.7, y: 5.75, w: 8.2, h: 0.4, fontSize: 14, color: GRIS_CLARO_OSCURO });
   s.addShape(pres.shapes.OVAL, { x: 9.2, y: 1.55, w: 3.4, h: 3.4, fill: { color: C.accent1 }, line: { color: HEX.accent1 }, objectName: "Círculo KPI" });
   T(s, num(kg.pct) + " %", { x: 9.2, y: 2.45, w: 3.4, h: 0.9, fontSize: 48, bold: true, color: C.background1, align: "center", fontFace: THEME.headFontFace });
@@ -209,7 +209,7 @@ Respuesta: con la duración exacta solo el 31,4 % se titula a tiempo; además, l
   const embudo = [
     [Number(filas.R1.filas_antes), ent(filas.R1.filas_antes) + " × 41 col.", "Base original SIES 2025", HEX.dk1],
     [Number(filas.R1.filas_despues), ent(filas.R1.filas_despues), "− " + ent(filas.R1.eliminadas) + " de posgrado y postítulo (alcance, no error)", HEX.dk2],
-    [Number(filas.R2.filas_despues), ent(filas.R2.filas_despues), "− " + ent(filas.R2.eliminadas) + " con año de ingreso inválido (códigos 1900, 9995, 9998, 9999)", HEX.dk2],
+    [Number(filas.R2.filas_despues), ent(filas.R2.filas_despues), "− " + ent(filas.R2.eliminadas) + " que ingresaron desde otra institución (año de ingreso 1900: no se puede medir su duración)", HEX.dk2],
     [Number(filas.R7.filas_despues), ent(filas.R7.filas_despues) + " × 54 col.", "− " + ent(filas.R7.eliminadas) + " de planes de continuidad (ingreso de otra carrera)", HEX.accent1],
   ];
   const maxN = embudo[0][0];
@@ -224,7 +224,7 @@ Respuesta: con la duración exacta solo el 31,4 % se titula a tiempo; además, l
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.75, y: 1.6, w: 3.98, h: 2.95, rectRadius: 0.12, fill: { color: ROJO_SUAVE }, line: { color: ROJO_SUAVE }, objectName: "Tarjeta corrección" });
   circuloIcono(s, I.alerta, 9.0, 1.82, 0.62, C.accent1, "Alerta");
   T(s, "Casi eliminamos el 18 % por error", { x: 9.75, y: 1.82, w: 2.85, h: 0.65, fontSize: 16, bold: true, color: C.accent1, valign: "middle" });
-  T(s, "Una regla descartaba 40.522 titulaciones de enero y febrero de 2026. Son del cierre del año académico 2025: excluirlas habría bajado el KPI de " + num(kg.pct) + " % a 67,7 %.",
+  T(s, "Una regla descartaba 40.522 titulaciones de enero y febrero de 2026. Son del cierre del año académico 2025: excluirlas habría bajado el KPI de " + num(kg.pct) + " % a 69,8 %.",
     { x: 9.0, y: 2.6, w: 3.5, h: 1.8, fontSize: 13.5, color: C.text1, valign: "top" });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.75, y: 4.75, w: 3.98, h: 1.9, rectRadius: 0.12, fill: { color: C.background2 }, line: { color: HEX.lt2 }, objectName: "Tarjeta columnas" });
   circuloIcono(s, I.columnas, 9.0, 4.97, 0.62, C.text1, "Columnas");
@@ -234,7 +234,7 @@ Respuesta: con la duración exacta solo el 31,4 % se titula a tiempo; además, l
   s.addNotes(
 `[1:15] Calidad y limpieza de datos.
 Decir: "Partimos con 328.998 filas y 41 columnas y terminamos con 216.436 filas y 54 columnas."
-"Ojo: no todo lo eliminado era dato sucio. 90 mil filas salieron por alcance (posgrado y postítulo), 17 mil por códigos inválidos en el año de ingreso, y 4.500 de planes de continuidad, donde el año de ingreso corresponde a otra carrera."
+"Ojo: no todo lo eliminado era dato sucio. 90 mil filas salieron por alcance (posgrado y postítulo), 17 mil que ingresaron desde otra institución (su año de ingreso viene como 1900, así que no se puede medir su duración; lo declaramos como limitación), y 4.500 de planes de continuidad, donde el año de ingreso corresponde a otra carrera."
 "Lo más importante: una primera regla eliminaba el 18 % de la base. Revisamos y eran titulaciones de enero y febrero de 2026, que pertenecen al cierre del año académico 2025. Si no lo detectamos, habríamos subestimado el KPI."
 "Por privacidad eliminamos el MRUN y la fecha de nacimiento; el dashboard solo muestra datos agregados."
 
@@ -310,7 +310,7 @@ Respuesta: por eso el modelo de la lámina siguiente controla área, edad, géne
 
   // =============================================================== 6. FACTORES
   s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Análisis" });
-  s.addText("Derecho es el foco más claro; la modalidad no marca diferencia", { placeholder: "title" });
+  s.addText("Derecho es el foco más claro; la modalidad no es concluyente", { placeholder: "title" });
   const factores = [
     ["Derecho (vs Tecnología)", efe("area_conocimiento", "Derecho")],
     ["Macrozona Norte (vs Metropolitana)", efe("macrozona", "Norte")],
@@ -340,7 +340,7 @@ Respuesta: por eso el modelo de la lámina siguiente controla área, edad, géne
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 9.2, y: 3.85, w: 3.53, h: 2.8, rectRadius: 0.12, fill: { color: C.background2 }, line: { color: HEX.lt2 }, objectName: "No significativos" });
   T(s, "Sin diferencia significativa", { x: 9.45, y: 4.02, w: 3.1, h: 0.35, fontSize: 15, bold: true, color: C.text1 });
   T(s, [
-    { text: "Modalidad: a distancia, vespertina, semipresencial", options: { bullet: true, breakLine: true } },
+    { text: "Modalidad: a distancia y vespertina (semipresencial, en el límite: p = 0,055)", options: { bullet: true, breakLine: true } },
     { text: "CFT: depende de cómo se especifica el modelo", options: { bullet: true, breakLine: true } },
     { text: "Macrozonas Centro, Sur y Austral", options: { bullet: true, breakLine: true } },
     { text: "Agropecuaria y Ciencias Básicas", options: { bullet: true } },
@@ -352,7 +352,8 @@ Decir: "Cada barra es el cambio en la probabilidad de titularse fuera de plazo f
 "Derecho: +20,9 puntos frente a Tecnología (odds ratio ${num(oD.OR, 2)}, IC 95 % ${num(oD.OR_inf, 2)}–${num(oD.OR_sup, 2)}). Es el efecto más grande y robusto."
 "Las carreras de IP y las técnicas universitarias tienen entre 14 y 17 puntos menos de atraso que las profesionales universitarias."
 "Macrozona Norte: +6 puntos. Mujeres: 5 puntos menos."
-"Igual de importante es lo que NO resultó: la modalidad no marca diferencia. En la comparación simple la educación a distancia parecía mejor, pero al controlar el perfil de sus estudiantes la diferencia desaparece."
+"Igual de importante es lo que NO resultó: la modalidad no marca una diferencia clara. En la comparación simple la educación a distancia parecía mejor, pero al controlar el perfil de sus estudiantes la diferencia desaparece."
+"Matiz: la categoría semipresencial está en el límite (p = 0,055) y se vuelve significativa si agregamos la duración teórica; por eso la tratamos como no concluyente."
 
 Pregunta probable: ¿entonces estudiar Derecho causa el atraso?
 Respuesta: no. Es una asociación en datos observacionales. Es consistente con un proceso de titulación largo (memoria y examen de grado), pero los datos no permiten confirmarlo; por eso recomendamos un diagnóstico antes de intervenir.
@@ -403,7 +404,7 @@ Respuesta: se ocultan las combinaciones con menos de 30 titulados, porque sus po
   const lims = [
     [I.sobrevive, "Sesgo de supervivencia", "Solo hay titulados: quien desertó no aparece. El KPI no es una tasa de titulación del sistema."],
     [I.causa, "Asociación, no causalidad", "Diseño observacional, sin datos de rendimiento, trabajo ni financiamiento."],
-    [I.regla, "Duración declarada distinta", "Cada institución informa la duración a su manera; se controla, pero puede quedar sesgo."],
+    [I.regla, "Exclusiones y medición", "Se excluyó al 7,4 % que ingresó desde otra institución (año 1900), y la duración se declara distinto entre instituciones."],
     [I.calendario, "Un solo año", "2025 no muestra tendencias, y un AUC de " + num(met.AUC, 2) + " no sirve para predecir casos individuales."],
   ];
   lims.forEach(([ic, tit, txt], i) => {
@@ -431,7 +432,7 @@ Respuesta: cruzando con las bases de matrícula del SIES para seguir cohortes co
   const recs = [
     [I.actuar, "Actuar", C.accent1, HEX.accent1, ["Diagnosticar el proceso de titulación en Derecho (memoria y examen de grado)", "Piloto de acompañamiento en carreras profesionales universitarias de mayor volumen"]],
     [I.investigar, "Investigar", C.text2, HEX.dk2, ["Causas del atraso en la macrozona Norte (+6 pp)", "Estandarizar cómo se declara la duración teórica"]],
-    [I.pausa, "No actuar aún", C.accent4, HEX.accent4, ["Modalidad: sin diferencias significativas", "CFT: resultado no robusto a la especificación"]],
+    [I.pausa, "No actuar aún", C.accent4, HEX.accent4, ["Modalidad: sin diferencias claras (semipresencial en el límite)", "CFT: resultado no robusto a la especificación"]],
   ];
   recs.forEach(([ic, tit, col, hex, items], i) => {
     const x = 0.6 + i * 4.1;
@@ -471,8 +472,8 @@ Decir la frase del título y abrir preguntas. Para preguntas técnicas, usar las
   s.addText("Anexo · Bitácora de limpieza de datos", { placeholder: "title" });
   const cab = ["Paso", "Dimensión", "Regla", "Eliminadas", "Filas después"].map((t) => ({ text: t, options: { bold: true, color: HEX.lt1, fill: { color: HEX.dk1 } } }));
   const cortas = {
-    R1: "Solo pregrado (alcance de la pregunta)", R2: "Año de ingreso entre 1950 y 2025 (excluye códigos especiales)",
-    R3: "Semestre de ingreso en {1, 2}", R4: "Fecha válida en el año académico 2025 (ene-2025 a feb-2026)",
+    R1: "Solo pregrado (alcance de la pregunta)", R2: "Año de ingreso 1900 = ingresó desde otra institución",
+    R3: "Semestre de ingreso en {1, 2}", R4: "Fecha válida en el año académico 2025 (mar-2025 a feb-2026)",
     R5: "Duración teórica > 0", R6: "Titulación posterior al ingreso",
     R7: "Excluye planes de continuidad", R8: "Elimina MRUN, fecha de nacimiento y títulos en texto",
   };
@@ -510,12 +511,15 @@ Decir la frase del título y abrir preguntas. Para preguntas técnicas, usar las
   s.addText("Anexo · Odds ratio y análisis de sensibilidad", { placeholder: "title" });
   s.addImage({ path: FIG("fig_10_odds_ratio.png"), x: 0.6, y: 1.4, w: 4.9, h: 4.9 * 1500 / 1350, objectName: "Odds ratio", altText: "Odds ratio con intervalos de confianza por factor" });
   const cft = sens["grupo_instCFT · técnica"];
+  const semi = sens["modalidad_jornadaSemipresencial u otra"];
   T(s, "¿Qué pasa si se agrega la duración teórica al modelo?", { x: 6.0, y: 1.5, w: 6.7, h: 0.45, fontSize: 18, bold: true, color: C.text1 });
   T(s, [
     { text: "Área, género, edad al ingreso y macrozona: las conclusiones no cambian.", options: { bullet: true, breakLine: true } },
-    { text: "CFT · técnica: OR " + num(cft.OR_modelo_principal, 2) + " (no significativo) pasa a " + num(cft.OR_con_duracion, 2) + " (significativo). El resultado depende de la especificación: no se recomienda actuar sobre él.", options: { bullet: true, breakLine: true } },
+    { text: "CFT · técnica: OR " + num(cft.OR_modelo_principal, 2) + " (no significativo) pasa a " + num(cft.OR_con_duracion, 2) + " (significativo).", options: { bullet: true, breakLine: true } },
+    { text: "Semipresencial u otra: p = " + num(semi.p_modelo_principal, 3) + " pasa a " + num(semi.p_con_duracion, 3) + " (en el límite). Plan especial cambia de dirección, sin ser significativo.", options: { bullet: true, breakLine: true } },
+    { text: "Estos resultados dependen de la especificación: no se recomienda actuar sobre ellos.", options: { bullet: true, breakLine: true } },
     { text: "La duración se dejó fuera del modelo principal por su VIF de 8,7 y porque obliga a comparar carreras técnicas y profesionales de igual duración, que no existen en los datos.", options: { bullet: true } },
-  ], { x: 6.0, y: 2.1, w: 6.7, h: 3.6, fontSize: 15, color: C.text1, valign: "top", paraSpaceAfter: 10 });
+  ], { x: 6.0, y: 2.1, w: 6.7, h: 4.4, fontSize: 14, color: C.text1, valign: "top", paraSpaceAfter: 8 });
   s.addNotes("Respaldo para preguntas sobre robustez y sobre la decisión de excluir la duración teórica.");
 
   await pres.writeFile({ fileName: SALIDA });

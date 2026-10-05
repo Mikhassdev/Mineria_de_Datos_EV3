@@ -70,19 +70,19 @@ def portada(titulo, subtitulo):
     rpr = '<w:color w:val="404040" w:themeColor="text1" w:themeTint="BF"/><w:lang w:eastAsia="es-CL"/>'
     amarillo = '<w:b/><w:highlight w:val="yellow"/>' + rpr
     run = lambda t, extra=rpr: '<w:r><w:rPr>%s</w:rPr><w:t xml:space="preserve">%s</w:t></w:r>' % (extra, t)
-    integrantes = (run("[COMPLETAR: tu nombre completo]", amarillo)
-                   + run(", Ignacio Larama Paycho y Johan Matos Chauca"))
+    # Datos de portada tal como el equipo los completó en Word (03-10-2026)
     return [
         ('<w:t xml:space="preserve">Asignatura: </w:t></w:r>',
-         '<w:t xml:space="preserve">Asignatura: </w:t></w:r>' + run("TI3V61 · ") + run("[COMPLETAR: nombre de la asignatura]", amarillo)),
+         '<w:t xml:space="preserve">Asignatura: </w:t></w:r>' + run("Minería de Datos")),
         ('<w:t xml:space="preserve">Sección: </w:t></w:r>',
-         '<w:t xml:space="preserve">Sección: </w:t></w:r>' + run("[COMPLETAR]", amarillo)),
+         '<w:t xml:space="preserve">Sección: </w:t></w:r>' + run("2026/P TI3V61/V-IEI-N6-P3-C1/V")),
         ('<w:t xml:space="preserve"> Nombre y apellidos</w:t></w:r>',
-         '<w:t xml:space="preserve"> </w:t></w:r>' + run("[COMPLETAR: nombre del docente]", amarillo)),
+         '<w:t xml:space="preserve"> </w:t></w:r>' + run("Igor Cáceres Padilla")),
         ('<w:t>Nombre de los integrantes del grupo:</w:t></w:r>',
-         '<w:t xml:space="preserve">Nombre de los integrantes del grupo: </w:t></w:r>' + integrantes),
+         '<w:t xml:space="preserve">Nombre de los integrantes del grupo: </w:t></w:r>'
+         + run("Ignacio Larama Paycho, Miguel Jorquera Marín y Johan Matos Chauca")),
         ('<w:t>Fecha de entrega</w:t></w:r>',
-         '<w:t xml:space="preserve">Fecha de entrega: </w:t></w:r>' + run("[COMPLETAR]", amarillo)),
+         '<w:t xml:space="preserve">Fecha de entrega: </w:t></w:r>' + run("05/10/2026")),
         ("<w:t>Informe Nombre del trabajo</w:t>", "<w:t>%s</w:t>" % titulo),
         ("<w:t>Nombre de la unidad de aprendizaje</w:t>", "<w:t>%s</w:t>" % subtitulo),
     ]
@@ -139,7 +139,7 @@ def informe():
           ["Decisión que apoya", "Priorizar carreras, áreas e instituciones para intervenciones de apoyo a la titulación"],
           ["Audiencia", "Direcciones académicas y de análisis institucional; equipos de aseguramiento de la calidad"],
           ["Unidad de análisis", "La titulación (un registro). Una persona con dos títulos aporta dos registros"],
-          ["Período", "Año académico 2025 (titulaciones entre enero de 2025 y febrero de 2026)"],
+          ["Período", "Año académico 2025 (titulaciones entre marzo de 2025 y febrero de 2026)"],
           ["Variable respuesta", "Titulación fuera de plazo: semestres transcurridos > duración teórica + 2 semestres"],
       ], [1, 3]),
       p("**KPI definidos.** Se seleccionaron cuatro indicadores directamente relacionados con la decisión. La meta del "
@@ -198,12 +198,15 @@ def informe():
       vineta("**Año académico 2025 incluye enero y febrero de 2026.** Una primera versión de la regla R4 aceptaba solo "
              "fechas de 2025 y excluía 40.522 registros (18 %). La exploración mostró que todos tenían fecha de enero o "
              "febrero de 2026, que en Chile corresponde al cierre del año académico 2025. Excluirlos habría eliminado a "
-             "quienes se titulan inmediatamente después de egresar y habría sesgado el KPI a la baja (67,7 % en lugar de "
+             "quienes se titulan inmediatamente después de egresar y habría sesgado el KPI a la baja (69,8 % en lugar de "
              f"{num(kg['pct'])} %)."),
-      vineta("**Códigos especiales en el año de ingreso** (1900, 9995, 9998, 9999): según el diccionario indican “sin "
-             "información” u “otro programa”; no permiten calcular la duración y se excluyen (R2)."),
+      vineta(f"**Año de ingreso con código 1900 (R2).** En pregrado, los {ent(bit[1]['eliminadas'])} registros excluidos "
+             "por esta regla tienen todos el código 1900, que según el diccionario significa “otro programa desde otra "
+             "institución”: son estudiantes que ingresaron a su carrera desde otra institución. Sin un año de ingreso real "
+             "no se puede medir su duración, por lo que se excluyen. Es una exclusión no aleatoria y se declara como "
+             "limitación."),
       vineta("**Planes regulares de continuidad excluidos (R7).** En ellos el año de ingreso corresponde a la carrera de "
-             "origen, por lo que la duración real no es comparable con la teórica (mediana de 14 semestres transcurridos "
+             "origen, por lo que la duración real no es comparable con la teórica (mediana de 13 semestres transcurridos "
              "frente a 6 teóricos). Es un problema de validez de medición, no de calidad del registro."),
       vineta("**Semestre académico de titulación.** Marzo a julio = primer semestre; agosto a febrero = segundo "
              "semestre. Los semestres transcurridos se cuentan desde el semestre de ingreso hasta el de titulación, "
@@ -296,10 +299,14 @@ def informe():
     d.figura(FIG("fig_11_calibracion.png"), "Figura 5. Calibración del modelo en datos de prueba: probabilidad "
              "predicha vs. observada por decil.", 4.2)
     cft = sens["grupo_instCFT · técnica"]
+    semi = sens["modalidad_jornadaSemipresencial u otra"]
     A(p(f"**Análisis de sensibilidad.** Al agregar la duración teórica al modelo, las conclusiones sobre área, género, "
-        f"edad al ingreso y macrozona no cambian. En cambio, el resultado de los CFT sí depende de la especificación: "
-        f"su OR pasa de {num(cft['OR_modelo_principal'], 2)} (no significativo) a {num(cft['OR_con_duracion'], 2)} "
-        "(significativo). Por esa razón no se recomienda actuar sobre ese resultado sin más análisis."))
+        f"edad al ingreso y macrozona no cambian. Dos resultados sí dependen de la especificación: el de los CFT, cuyo "
+        f"OR pasa de {num(cft['OR_modelo_principal'], 2)} (no significativo) a {num(cft['OR_con_duracion'], 2)} "
+        f"(significativo), y el de la modalidad semipresencial u otra, que está en el límite de la significancia "
+        f"(p = {num(semi['p_modelo_principal'], 3)} en el modelo principal y {num(semi['p_con_duracion'], 3)} con la "
+        "duración). El plan especial cambia de dirección, pero no es significativo en ninguno de los dos modelos. Por "
+        "eso no se recomienda actuar sobre estos resultados sin más análisis."))
 
     # 6. Interpretación
     A(h2("Interpretación de los resultados"),
@@ -319,9 +326,11 @@ def informe():
              f"Metropolitana ({OR('macrozonaNorte')}); el resto de las macrozonas no difiere significativamente."),
       vineta(f"**Mujeres** tienen {pp(efecto('genero', 'Mujer')['dif_vs_ref_pp'])} de probabilidad de atraso "
              f"({OR('generoMujer')}). La diferencia es estadísticamente clara pero de magnitud moderada."),
-      vineta("**Modalidad no muestra diferencias significativas** una vez controladas las demás variables, aunque en "
-             "la comparación simple los programas a distancia parecían mejores (80,7 % oportuna). La diferencia "
-             "descriptiva se explica por la composición de sus estudiantes y carreras, no por la modalidad."),
+      vineta("**Modalidad no muestra diferencias significativas en el modelo principal** una vez controladas las demás "
+             "variables, aunque en la comparación simple los programas a distancia parecían mejores (80,7 % oportuna). "
+             "La diferencia descriptiva se explica por la composición de sus estudiantes y carreras, no por la modalidad. "
+             "La categoría semipresencial u otra (2.381 titulaciones) está en el límite: pasa a ser significativa al "
+             "agregar la duración teórica, por lo que su resultado no es concluyente."),
       vineta(f"**Edad al ingreso:** quienes ingresan con 30 años o más tienen {pp(efecto('tramo_edad_ingreso', '30 o más')['dif_vs_ref_pp'])}. "
              "Este resultado debe leerse con cautela: probablemente refleja un sesgo de supervivencia, porque los "
              "estudiantes mayores que se atrasan tienden a abandonar y no aparecen en una base de titulados."),
@@ -342,6 +351,10 @@ def informe():
              "variable indicadora, pero puede quedar sesgo residual."),
       vineta("**Muestra y período:** un solo año (2025), sin posibilidad de analizar tendencias. Se excluyeron 4.526 "
              "titulaciones de planes de continuidad."),
+      vineta(f"**Exclusión de ingresos desde otra institución:** {ent(bit[1]['eliminadas'])} titulaciones (7,4 % del "
+             "pregrado) tienen año de ingreso 1900, es decir, ingresaron desde otra institución, y se excluyeron porque no "
+             "permiten medir la duración. Si este grupo se atrasa más (o menos) que el resto, el KPI podría estar sobre o "
+             "subestimado. Una mejora futura es usar el año de ingreso a la carrera actual para estimar su duración."),
       vineta("**Variables omitidas:** rendimiento previo, nivel socioeconómico, trabajo y financiamiento no están en la base."),
       vineta("**Extrapolación:** los resultados aplican a pregrado en Chile en 2025; no deben extenderse a posgrado ni a "
              "otros países."))
@@ -394,7 +407,11 @@ def informe():
       vineta("**Accesibilidad:** paleta validada para daltonismo, el color nunca es la única señal (etiquetas, leyendas y "
              "textos), contraste suficiente y valores disponibles en tablas."),
       vineta("**Privacidad y trazabilidad:** solo datos agregados con celdas de 30 o más titulados; cada KPI muestra fuente y "
-             "fecha de actualización, y la página de método incluye la bitácora de calidad."))
+             "fecha de actualización, y la página de método incluye la bitácora de calidad."),
+      vineta("**KPI e indicadores de contexto:** la fila superior del Resumen muestra los KPI definidos en este informe "
+             "(titulación oportuna, brecha entre instituciones y mediana de atraso, con el % que tarda más del doble) y "
+             "dos tarjetas marcadas como «Contexto»: el área más crítica (Derecho) y el volumen de titulaciones analizadas, "
+             "que ayudan a dimensionar el problema pero no son KPI."))
 
     # 10. Reproducibilidad
     A(h2("Reproducibilidad y organización del trabajo"),
@@ -476,8 +493,8 @@ def resumen():
                                "calibración, AUC) y análisis de sensibilidad", "Listo"],
           ["4. Interpretación", "Efectos en puntos porcentuales, limitaciones y recomendaciones proporcionales", "Listo"],
           ["5. Dashboard", "4 páginas interactivas publicadas en la web, con filtros y solo datos agregados", "Listo"],
-          ["6. Informe técnico", "Documento en plantilla institucional", "Listo (completar portada)"],
-          ["7. Presentación oral", "Síntesis, demostración del dashboard y defensa en equipo", "Pendiente"],
+          ["6. Informe técnico", "Documento en plantilla institucional", "Listo"],
+          ["7. Presentación oral", "10 láminas + anexo con notas del orador; demostración en vivo del dashboard", "Lista (falta ensayar)"],
       ], [1.2, 3.6, 1]),
       h3("Principales resultados"),
       vineta(f"**{num(kg['pct'])} %** de las titulaciones fue oportuna (meta referencial: 75 %)."),
@@ -493,6 +510,8 @@ def resumen():
              "habría eliminado el 18 % de la base y sesgado el resultado."),
       vineta("Se usó la edad al ingreso, no la edad al titularse, para evitar causalidad inversa."),
       vineta("Se excluyeron los planes de continuidad porque su año de ingreso corresponde a otra carrera."),
+      vineta("Se excluyó al 7,4 % que ingresó desde otra institución (año de ingreso 1900), porque no permite medir la "
+             "duración; es una limitación declarada."),
       vineta("Los resultados son asociaciones, no causas, y la base solo incluye a quienes se titularon (sesgo de "
              "supervivencia)."),
       h3("Productos y acceso"),
@@ -500,9 +519,8 @@ def resumen():
       vineta(f"Código reproducible: {URL_REPO} (ejecutar *R/run_all.R*)"),
       vineta("Informe técnico: *informe/Informe_Titulacion_Oportuna_2025.docx*"),
       h3("Pendientes"),
-      vineta("Completar los datos de portada (asignatura, sección, docente, integrantes y fecha) en ambos documentos."),
       vineta("Validar con el docente la meta referencial del 75 % y el criterio de holgura de 2 semestres."),
-      vineta("Preparar la presentación oral y distribuir la participación entre los integrantes."))
+      vineta("Distribuir la participación entre los integrantes y ensayar la presentación con cronómetro."))
 
     # ---------------------------------------------------------- limpieza de datos
     elim = {b["paso"]: int(b["eliminadas"]) for b in bit}
@@ -510,9 +528,9 @@ def resumen():
     ini_f, fin_f = int(chq["Registros totales"]), int(kg["n"])
     criterio = {
         "R1": "La pregunta es sobre pregrado; se excluyen posgrado y postítulo (no es un error del dato, es alcance)",
-        "R2": "Códigos especiales del diccionario (1900, 9995, 9998, 9999 = sin información u otro programa): no permiten calcular la duración",
+        "R2": "Año de ingreso 1900 = ingresó desde otra institución (único código presente en pregrado): no permite calcular la duración",
         "R3": "Valor fuera de dominio",
-        "R4": "Fecha con formato inválido o fuera del año académico 2025 (ene-2025 a feb-2026)",
+        "R4": "Fecha con formato inválido o fuera del año académico 2025 (mar-2025 a feb-2026)",
         "R5": "Sin duración teórica no se puede medir el atraso",
         "R6": "La titulación no puede ser anterior al ingreso",
         "R7": "El año de ingreso corresponde a la carrera de origen: el atraso queda mal medido",
@@ -534,7 +552,9 @@ def resumen():
       ], [1.7, 1, 0.8, 2.8], ["left", "right", "center", "left"]),
       p(f"En total se eliminaron **{ent(ini_f - fin_f)} filas ({num(100 * (ini_f - fin_f) / ini_f)} %)**. Conviene "
         f"distinguir el motivo: {ent(elim['R1'])} filas salieron por **alcance** (no son pregrado), "
-        f"{ent(elim['R2'])} por **datos no válidos** y {ent(elim['R7'])} por **validez de medición**."),
+        f"{ent(elim['R2'])} porque **ingresaron desde otra institución** (año de ingreso 1900, sin año real) y "
+        f"{ent(elim['R7'])} por **validez de medición**. La exclusión de quienes ingresaron desde otra institución "
+        "no es aleatoria y se declara como limitación."),
       h3("Filas eliminadas: regla, criterio y cantidad"),
       tabla(["Paso", "Regla", "Criterio", "Filas antes", "Eliminadas", "Filas después"],
             [[b["paso"], b["regla"], criterio[b["paso"]], ent(b["filas_antes"]), ent(b["eliminadas"]),

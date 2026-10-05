@@ -31,7 +31,7 @@ Evaluación sumativa TI3V61 (U3 · S9): análisis estadístico en R y dashboard 
 | Técnica: regresión logística | Respuesta binaria; OR con IC 95 % y diagnósticos |
 | Herramienta: flexdashboard + crosstalk (HTML estático) | Se abre sin servidor; filtros en el navegador; solo datos agregados |
 | Titulación oportuna = duración teórica + 2 semestres | Práctica/tesis; las instituciones declaran el proceso de titulación de forma heterogénea (`x02`) |
-| Año académico 2025 = ene-2025 a feb-2026 | 40.522 titulaciones de ene-feb 2026 pertenecen al cierre de 2025 (`x01`) |
+| Año académico 2025 = mar-2025 a feb-2026 | 40.522 titulaciones de ene-feb 2026 pertenecen al cierre de 2025 (`x01`) |
 | Excluir Plan Regular de Continuidad | El año de ingreso corresponde a la carrera de origen: respuesta mal medida |
 | Edad al ingreso, no `rango_edad` | `rango_edad` es al titularse: causalidad inversa |
 | Modelo principal sin `dur_total_carr` | VIF 8,7 y extrapolación; se reporta como sensibilidad |

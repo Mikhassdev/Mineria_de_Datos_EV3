@@ -85,12 +85,16 @@ Resumen
 Row {data-height=170}
 ---------------------------------------------------------------------
 
-### Titulación oportuna (meta `r x$meta` %)
+### Titulación oportuna (KPI principal)
 
 ```{r}
-gauge(round(g$pct, 1), min = 0, max = 100, symbol = "%",
-      gaugeSectors(success = c(x$meta, 100), warning = c(x$meta - 10, x$meta), danger = c(0, x$meta - 10)),
-      label = paste0("IC 95 %: ", pct(g$ic_inf), "–", pct(g$ic_sup)))
+# valueBox en lugar de gauge: el gauge de flexdashboard muestra el decimal con punto
+valueBox(pct(g$pct),
+         caption = paste0("Titulación oportuna · meta ", x$meta, " % (",
+                          formatC(abs(g$pct - x$meta), format = "f", digits = 1, decimal.mark = ","),
+                          " pp bajo la meta) · IC 95 %: ",
+                          pct(g$ic_inf), "–", pct(g$ic_sup)),
+         icon = "fa-graduation-cap", color = ifelse(g$ic_sup < x$meta, "warning", "success"))
 ```
 
 ### Brecha entre tipos de institución
@@ -101,32 +105,32 @@ valueBox(pp(peor$pct - mejor$pct),
          icon = "fa-arrows-alt-h", color = "warning")
 ```
 
-### Área más crítica
+### Área más crítica (contexto)
 
 ```{r}
-valueBox(pct(ar$pct), caption = paste0(ar$valor, ": titulación oportuna (", num(ar$n), " titulados)"),
+valueBox(pct(ar$pct), caption = paste0("Contexto · ", ar$valor, ": titulación oportuna (", num(ar$n), " titulados)"),
          icon = "fa-exclamation-triangle", color = "danger")
 ```
 
 ### Mediana de atraso
 
 ```{r}
-valueBox(paste(g$mediana_sobreduracion, "semestre"),
-         caption = paste0("sobre la duración teórica · ", pct(g$pct_mas_doble), " tarda más del doble"),
+valueBox(paste("Mediana:", g$mediana_sobreduracion, "semestre"),
+         caption = paste0("de atraso sobre la duración teórica · ", pct(g$pct_mas_doble), " tarda más del doble"),
          icon = "fa-clock", color = "info")
 ```
 
-### Titulaciones analizadas
+### Titulaciones analizadas (contexto)
 
 ```{r}
-valueBox(num(g$n), caption = "pregrado, año académico 2025 (tras reglas de calidad)",
+valueBox(num(g$n), caption = "Contexto · titulaciones de pregrado analizadas, año académico 2025",
          icon = "fa-user-graduate", color = "primary")
 ```
 
-Row {data-height=40}
+Row {data-height=60}
 ---------------------------------------------------------------------
 
-<div style="font-size:12px;color:#52514e;padding:4px 8px;">`r pie_kpi`. **Oportuna** = titulación dentro de la duración teórica + `r x$holgura` semestres. Meta referencial definida por el equipo. Naranja = todo el IC 95 % bajo la meta; gris = el IC cruza la meta (no concluyente).</div>
+<div style="font-size:12px;color:#52514e;padding:4px 8px;">`r pie_kpi`. **KPI:** titulación oportuna, brecha entre instituciones, mediana de atraso y % que tarda más del doble; las tarjetas marcadas «Contexto» no son KPI. **Oportuna** = titulación dentro de la duración teórica + `r x$holgura` semestres. Meta referencial definida por el equipo. Naranja = todo el IC 95 % bajo la meta; gris = el IC cruza la meta (no concluyente).</div>
 
 Row {data-height=420}
 ---------------------------------------------------------------------
@@ -146,7 +150,7 @@ puntos_ic(filter(kd, dimension == "area_conocimiento"))
 Row {data-height=380}
 ---------------------------------------------------------------------
 
-### Por región de la sede: el norte rinde bajo el promedio
+### Por región de la sede: 4 de las 5 regiones más bajas son del norte (la más baja es Los Ríos)
 
 ```{r}
 puntos_ic(filter(kd, dimension == "region_sede"), alto = 360)
@@ -239,7 +243,7 @@ plot_ly(cal, x = ~100 * prob_predicha, y = ~100 * tasa_observada, type = "scatte
 
 **Lectura:** los puntos siguen la diagonal, así que las probabilidades del modelo son confiables en promedio.
 
-**Robustez:** al agregar la duración teórica de la carrera las conclusiones por área, género, edad y región no cambian; la diferencia de los **CFT** sí depende de esa especificación, por lo que no se recomienda actuar sobre ella sin más análisis.
+**Robustez:** al agregar la duración teórica de la carrera las conclusiones por área, género, edad y región no cambian. Dos resultados sí dependen de esa especificación: **CFT** (pasa a significativo) y **Semipresencial u otra** (p = 0,055 → 0,034, en el límite). No se recomienda actuar sobre ellos sin más análisis.
 
 **Edad al ingreso:** que quienes entran con más de 30 años se titulen más a tiempo probablemente refleja **sesgo de supervivencia** (los que se atrasan abandonan y no aparecen en los datos).
 
@@ -331,7 +335,7 @@ Row
 
 | KPI | Definición | Unidad | Meta | Período | Fuente | Actualización |
 |---|---|---|---|---|---|---|
-| Titulación oportuna | Titulaciones con semestres transcurridos ≤ duración teórica + `r x$holgura` | % de titulaciones | `r x$meta` % (referencial) | Año académico 2025 (ene-2025 a feb-2026) | SIES-Mineduc | Datos: `r fch(x$fecha_datos)` · Panel: `r fch(x$generado)` |
+| Titulación oportuna | Titulaciones con semestres transcurridos ≤ duración teórica + `r x$holgura` | % de titulaciones | `r x$meta` % (referencial) | Año académico 2025 (mar-2025 a feb-2026) | SIES-Mineduc | Datos: `r fch(x$fecha_datos)` · Panel: `r fch(x$generado)` |
 | Brecha entre tipos de institución | Diferencia entre el grupo con menor y mayor % oportuna | puntos porcentuales | Reducir | Año académico 2025 | SIES-Mineduc | Ídem |
 | Mediana de atraso | Mediana de (semestres transcurridos − duración teórica) | semestres | ≤ 1 | Año académico 2025 | SIES-Mineduc | Ídem |
 | % que tarda más del doble | Titulaciones con más del doble de la duración teórica | % de titulaciones | Monitoreo | Año académico 2025 | SIES-Mineduc | Ídem |
@@ -365,6 +369,7 @@ x$bitacora |>
 - **Asociación, no causalidad:** el diseño es observacional; no hay variables de rendimiento, financiamiento ni trabajo.
 - **Duración teórica heterogénea:** algunas instituciones declaran el proceso de titulación sin sumarlo a la duración total; se controla con una variable, pero puede quedar sesgo residual.
 - **Planes de continuidad excluidos** (4.526): su año de ingreso corresponde a la carrera de origen.
+- **Ingresos desde otra institución excluidos** (17.746; 7,4 % del pregrado): su año de ingreso viene con el código 1900, por lo que no se puede medir su duración. Si se atrasan más o menos que el resto, el KPI podría estar sesgado.
 - **Un solo año (2025):** no permite ver tendencias.
 - **Privacidad:** se eliminaron MRUN y fecha de nacimiento; el panel solo muestra datos agregados (celdas ≥ `r x$n_min_celda`).
 

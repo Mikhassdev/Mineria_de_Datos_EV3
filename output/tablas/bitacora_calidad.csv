@@ -1,8 +1,8 @@
 paso,dimension,regla,filas_antes,filas_despues,eliminadas
 R1,Alcance,Solo nivel_global = 'Pregrado' (la pregunta es sobre pregrado),328998,238708,90290
-R2,Validez,Año de ingreso original entre 1950 y 2025 (excluye códigos 1900/9995/9998/9999),238708,220962,17746
+R2,Validez,Año de ingreso original entre 1950 y 2025 (en pregrado solo aparece el código 1900 = ingreso desde otra institución),238708,220962,17746
 R3,Validez,"Semestre de ingreso original en {1, 2}",220962,220962,0
-R4,Validez,Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-01-01 a 2026-02-28),220962,220962,0
+R4,Validez,Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-03-01 a 2026-02-28),220962,220962,0
 R5,Validez,Duración teórica total de la carrera > 0 semestres,220962,220962,0
 R6,Consistencia,Semestres transcurridos >= 1 (titulación no anterior al ingreso),220962,220962,0
 R7,Validez de medición,Excluye 'Plan Regular de Continuidad' (ingreso de origen no comparable con duración teórica),220962,216436,4526

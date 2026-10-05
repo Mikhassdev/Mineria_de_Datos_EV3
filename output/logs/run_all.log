@@ -35,9 +35,9 @@ SHA-256 coincide: TRUE
   regla                                                                         
   <chr>                                                                         
 1 Solo nivel_global = 'Pregrado' (la pregunta es sobre pregrado)                
-2 Año de ingreso original entre 1950 y 2025 (excluye códigos 1900/9995/9998/999…
+2 Año de ingreso original entre 1950 y 2025 (en pregrado solo aparece el código…
 3 Semestre de ingreso original en {1, 2}                                        
-4 Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-01-…
+4 Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-03-…
 5 Duración teórica total de la carrera > 0 semestres                            
 6 Semestres transcurridos >= 1 (titulación no anterior al ingreso)              
 7 Excluye 'Plan Regular de Continuidad' (ingreso de origen no comparable con du…
@@ -201,7 +201,7 @@ SHA-256 coincide: TRUE
 47                     1
 48                     1
 49                     1
->>> OK R/03_descriptivo.R en 4 s
+>>> OK R/03_descriptivo.R en 6 s
 
 >>> Ejecutando R/04_modelo.R 
 Registros para el modelo: 216435 (excluidos por NA: 1 )
@@ -372,7 +372,7 @@ GVIF ajustado de dur_total_carr en el modelo de sensibilidad: 2.95
 28 tramo_edad_ingreso 30 o más                              18.5         -12.5
 29 genero             Hombre                                30.8           0  
 30 genero             Mujer                                 25.7          -5  
->>> OK R/04_modelo.R en 14 s
+>>> OK R/04_modelo.R en 15 s
 
 >>> Ejecutando R/05_datos_dashboard.R 
 Celdas en dashboard: 861 | excluidas (n < 30 ): 430 
@@ -380,4 +380,4 @@ Celdas en dashboard: 861 | excluidas (n < 30 ): 430
 
 >>> Ejecutando R/06_render_dashboard.R 
 Dashboard generado: C:\Users\PC\Desktop\Mineria_de_Datos_EV3\dashboard\dashboard_titulacion.html 
->>> OK R/06_render_dashboard.R en 4 s
+>>> OK R/06_render_dashboard.R en 9 s

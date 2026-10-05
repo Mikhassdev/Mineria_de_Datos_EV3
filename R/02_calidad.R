@@ -81,7 +81,7 @@ d <- raw |>
                 "Solo nivel_global = 'Pregrado' (la pregunta es sobre pregrado)",
                 nivel_global == "Pregrado") |>
   aplicar_regla("R2", "Validez",
-                "Año de ingreso original entre 1950 y 2025 (excluye códigos 1900/9995/9998/9999)",
+                "Año de ingreso original entre 1950 y 2025 (en pregrado solo aparece el código 1900 = ingreso desde otra institución)",
                 between(anio_ing_carr_ori, 1950L, 2025L)) |>
   aplicar_regla("R3", "Validez",
                 "Semestre de ingreso original en {1, 2}",
@@ -89,9 +89,9 @@ d <- raw |>
   # El proceso 2025 incluye titulaciones de ene-feb 2026 (cierre del año
   # académico 2025); ver R/exploratorio/x01_fechas_titulacion.R
   aplicar_regla("R4", "Validez",
-                "Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-01-01 a 2026-02-28)",
+                "Fecha de titulación válida (AAAAMMDD) dentro del año académico 2025 (2025-03-01 a 2026-02-28)",
                 grepl("^[0-9]{8}$", fecha_obtencion_titulo) &
-                  between(fecha_obtencion_titulo, "20250101", "20260228")) |>
+                  between(fecha_obtencion_titulo, "20250301", "20260228")) |>
   aplicar_regla("R5", "Validez",
                 "Duración teórica total de la carrera > 0 semestres",
                 !is.na(dur_total_carr) & dur_total_carr > 0)
@@ -122,7 +122,7 @@ d <- d |>
                 sem_transcurridos >= 1L) |>
   # En planes de continuidad, anio_ing_carr_ori corresponde al ingreso a la
   # carrera de origen: la duración real no es comparable con dur_total_carr
-  # (mediana 14 semestres transcurridos vs 6 teóricos). Validez de medición.
+  # (mediana 13 semestres transcurridos vs 6 teóricos). Validez de medición.
   aplicar_regla("R7", "Validez de medición",
                 "Excluye 'Plan Regular de Continuidad' (ingreso de origen no comparable con duración teórica)",
                 tipo_plan_carr != "Plan Regular de Continuidad")
