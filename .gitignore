@@ -14,3 +14,7 @@ informe/_plantilla/
 # Dependencias de Node para generar la presentación
 presentacion/node_modules/
 presentacion/*.pptx
+
+# Guía de estudio: contiene nombres del equipo; solo se versiona el generador
+guia_de_estudio/*.pdf
+guia_de_estudio/*.html

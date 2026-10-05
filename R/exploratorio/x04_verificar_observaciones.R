@@ -38,3 +38,16 @@ read_csv("output/tablas/kpi_por_dimension.csv", show_col_types = FALSE) |>
   filter(dimension %in% c("region_sede", "macrozona")) |>
   select(dimension, valor, n, pct, ic_inf, ic_sup) |> arrange(dimension, pct) |>
   mutate(across(where(is.numeric), \(x) round(x, 1))) |> print(n = Inf)
+
+# Guardar las cifras verificadas para que los documentos las lean (no escribirlas a mano)
+pre_val <- pre |> filter(between(anio_ing_carr_ori, 1950L, 2025L))
+verif <- tibble(
+  indicador = c("pct_oportuna_sin_ene_feb_2026", "mediana_sem_continuidad", "mediana_teorica_continuidad",
+                "n_r2_codigo_1900", "pct_r2_del_pregrado", "pct_r2_del_total", "primera_fecha", "ultima_fecha"),
+  valor = c(round(100 * mean(d$titulacion_oportuna[format(d$fecha_titulo, "%Y") == "2025"]), 1),
+            median(cont$sem), median(cont$dur_total_carr),
+            sum(pre$anio_ing_carr_ori == 1900L), round(100 * mean(pre$anio_ing_carr_ori == 1900L), 1),
+            round(100 * sum(raw$anio_ing_carr_ori == 1900L & raw$nivel_global == "Pregrado") / nrow(raw), 1),
+            format(min(d$fecha_titulo), "%d-%m-%Y"), format(max(d$fecha_titulo), "%d-%m-%Y")))
+write_csv(verif, "output/tablas/verificaciones.csv")
+print(verif)
